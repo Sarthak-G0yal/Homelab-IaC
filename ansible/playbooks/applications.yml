@@ -4,8 +4,3 @@
   roles:
     - plex
 
-- name: Configure Jenkins Server
-  hosts: jenkins
-  become: yes
-  roles:
-    - jenkins
