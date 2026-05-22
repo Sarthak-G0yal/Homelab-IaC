@@ -26,23 +26,6 @@ variable "ssh_public_key_path" {
   default     = "~/.ssh/id_ed25519.pub"
 }
 
-variable "lxc_node_name" {
-  type        = string
-  description = "Proxmox node name"
-  default     = "pve-main"
-}
-
-variable "lxc_vm_id" {
-  type        = number
-  description = "LXC container ID"
-  default     = 202
-}
-
-variable "lxc_hostname" {
-  type        = string
-  description = "LXC hostname"
-  default     = "streaming"
-}
 
 variable "lxc_datastore_id" {
   type        = string
@@ -62,11 +45,6 @@ variable "lxc_bridge" {
   default     = "vmbr0"
 }
 
-variable "lxc_ipv4_address" {
-  type        = string
-  description = "IPv4 address in CIDR notation"
-  default     = "192.168.1.130/24"
-}
 
 variable "lxc_ipv4_gateway" {
   type        = string
@@ -86,35 +64,6 @@ variable "lxc_dns_servers" {
   default     = ["192.168.1.120"]
 }
 
-variable "lxc_disk_size_gb" {
-  type        = number
-  description = "Rootfs size in GB"
-  default     = 16
-}
-
-variable "lxc_memory_mb" {
-  type        = number
-  description = "Dedicated memory in MB"
-  default     = 4096
-}
-
-variable "lxc_swap_mb" {
-  type        = number
-  description = "Swap size in MB"
-  default     = 1024
-}
-
-variable "lxc_cpu_cores" {
-  type        = number
-  description = "CPU cores"
-  default     = 4
-}
-
-variable "lxc_unprivileged" {
-  type        = bool
-  description = "Run container unprivileged"
-  default     = true
-}
 
 variable "lxc_start_on_boot" {
   type        = bool
@@ -159,14 +108,26 @@ variable "lxc_root_password" {
   sensitive   = true
 }
 
-variable "lxc_tags" {
-  type        = list(string)
-  description = "Container tags"
-  default     = ["application", "plex"]
+variable "plex_config" {
+  type = object({
+    node_name    = string
+    vm_id        = number
+    ipv4_address = string
+    disk_size_gb = number
+    memory_mb    = number
+    cpu_cores    = number
+  })
+  description = "Configuration settings for the Plex LXC container"
 }
 
-variable "lxc_nesting" {
-  type        = bool
-  description = "Enable nesting"
-  default     = true
+variable "jenkins_config" {
+  type = object({
+    node_name    = string
+    vm_id        = number
+    ipv4_address = string
+    disk_size_gb = number
+    memory_mb    = number
+    cpu_cores    = number
+  })
+  description = "Configuration settings for the Jenkins LXC container"
 }
