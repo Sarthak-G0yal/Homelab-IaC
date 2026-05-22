@@ -174,6 +174,13 @@ To expose Jenkins to the internet securely without port-forwarding, you must man
 2. Add a Public Hostname pointing to `http://localhost:8080` (or `http://192.168.1.132:8080`).
 3. SSH into Jenkins (`192.168.1.132`) and run the exact `cloudflared service install ...` command provided by the Cloudflare Dashboard.
 
+### Docker-in-LXC (Host Configuration)
+Since the Proxmox API token is restricted from modifying security feature flags other than `nesting` via the API, the `keyctl` feature must be enabled manually on the Proxmox host (`proxmox`) using the CLI to support Docker inside the container:
+```bash
+# Run this on your Proxmox host CLI (proxmox)
+pct set 207 -features keyctl=1
+```
+
 ### Security / Firewall
 If you decide to enable UFW on the Jenkins server in the future, run the following manually on the LXC to ensure you don't lock yourself out:
 ```bash

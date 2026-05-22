@@ -19,7 +19,7 @@ module "jenkins" {
   cpu_cores             = var.jenkins_config.cpu_cores
   unprivileged          = true
   nesting               = true
-  keyctl                = true
+  keyctl                = false
   start_on_boot         = var.lxc_start_on_boot
   started               = var.lxc_started
   template_file_id      = var.lxc_template_file_id
