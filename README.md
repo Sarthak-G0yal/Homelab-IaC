@@ -6,7 +6,9 @@ This repository manages a modular Homelab environment on Proxmox using **Terrafo
 
 - **Networking**: Dedicated reverse proxy container running Traefik (VMID 110).
 - **Databases**: Unified database server running PostgreSQL 16 and MongoDB 4.4 (VMID 300).
-- **Applications**: Plex Media Server running in a Privileged LXC with Intel QuickSync GPU Passthrough and UFW firewall (VMID 202).
+- **Applications**: 
+  - Plex Media Server running in a Privileged LXC with Intel QuickSync GPU Passthrough and UFW firewall (VMID 202).
+  - Jenkins CI/CD Server running in an Unprivileged LXC with Docker-in-LXC (VMID 207).
 
 ## Repository Structure
 
@@ -36,10 +38,11 @@ infra/
 │   │   ├── hosts.ini                      # Defines [postgres], [applications], [reverse_proxy]
 │   │   └── group_vars/                    # Configs like DB passwords, listening ports
 │   ├── playbooks/
-│   │   ├── applications.yml               # Runs Plex role
+│   │   ├── applications.yml               # Runs Plex & Jenkins roles
 │   │   ├── databases.yml                  # Runs Postgres & MongoDB roles
 │   │   └── reverse-proxy.yml              # Runs Traefik role
 │   └── roles/
+│       ├── jenkins/                       # Installs Java 21, Jenkins, Docker for CI/CD
 │       ├── mongodb/                       # Installs MongoDB 4.4 (Non-AVX compatible)
 │       ├── plex/                          # Installs Plex & UFW, configures QuickSync groups
 │       ├── postgres/                      # Installs Postgres 16, configures SCRAM-SHA-256
@@ -158,3 +161,25 @@ sudo cp ./traefik.crt /usr/local/share/ca-certificates/traefik.crt
 sudo update-ca-certificates
 ```
 *Note: Fully close and reopen Chrome for the trusted certificate to take effect.*
+
+---
+
+## Jenkins Post-Deployment (Manual)
+
+The Jenkins CI/CD server is fully provisioned by Terraform and Ansible but remains isolated from the Traefik reverse proxy by design. 
+
+### External Access (Cloudflare Tunnels)
+To expose Jenkins to the internet securely without port-forwarding, you must manually run the `cloudflared` daemon inside the Jenkins container:
+1. Log into your Cloudflare Zero Trust Dashboard and create a new Tunnel.
+2. Add a Public Hostname pointing to `http://localhost:8080` (or `http://192.168.1.132:8080`).
+3. SSH into Jenkins (`192.168.1.132`) and run the exact `cloudflared service install ...` command provided by the Cloudflare Dashboard.
+
+### Security / Firewall
+If you decide to enable UFW on the Jenkins server in the future, run the following manually on the LXC to ensure you don't lock yourself out:
+```bash
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow 22/tcp     # SSH
+sudo ufw allow 8080/tcp   # Jenkins UI
+sudo ufw enable
+```

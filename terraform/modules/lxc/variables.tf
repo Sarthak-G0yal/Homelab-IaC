@@ -138,3 +138,9 @@ variable "nesting" {
   description = "Enable nesting (required for Ubuntu 22.04+ systemd)"
   default     = true
 }
+
+variable "keyctl" {
+  type        = bool
+  description = "Enable keyctl (required for Docker in unprivileged LXCs)"
+  default     = false
+}
