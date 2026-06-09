@@ -1,0 +1,22 @@
+services:
+  server:
+    image: sarthakg0yal/asap-server:latest
+    container_name: asap-server
+    pull_policy: always
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "3005:3000"
+
+  client:
+    image: sarthakg0yal/asap-client:latest
+    container_name: asap_client
+    pull_policy: always
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "5173:80"
+    depends_on:
+      - server

@@ -1,0 +1,70 @@
+---
+- name: Install dependencies
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+    state: present
+    update_cache: yes
+
+- name: Ensure /etc/apt/keyrings directory exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download Docker GPG key
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+
+- name: Find old Docker repository files
+  ansible.builtin.find:
+    paths: /etc/apt/sources.list.d/
+    contains: 'download\.docker\.com'
+  register: old_docker_repos
+
+- name: Clean up old Docker repository files
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ old_docker_repos.files }}"
+
+- name: Add Docker Repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_facts['distribution_release'] }} stable"
+    state: present
+    filename: docker
+
+- name: Install Docker
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+    state: present
+    update_cache: yes
+
+- name: Start and enable Docker
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Create docker stack directory
+  ansible.builtin.file:
+    path: /home/server/docker
+    state: directory
+    mode: '0755'
+
+- name: Sync docker-files to container
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../docker-files/"
+    dest: /home/server/docker/
+    directory_mode: '0755'
+    owner: root
+    group: root

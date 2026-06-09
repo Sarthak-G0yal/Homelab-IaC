@@ -131,3 +131,15 @@ variable "jenkins_config" {
   })
   description = "Configuration settings for the Jenkins LXC container"
 }
+
+variable "server_docker_config" {
+  type = object({
+    node_name    = string
+    vm_id        = number
+    ipv4_address = string
+    disk_size_gb = number
+    memory_mb    = number
+    cpu_cores    = number
+  })
+  description = "Configuration settings for the server-docker LXC container"
+}

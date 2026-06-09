@@ -4,3 +4,8 @@
   roles:
     - plex
 
+- name: Configure Server Docker
+  hosts: server-docker
+  become: yes
+  roles:
+    - server-docker

@@ -1,0 +1,53 @@
+---
+- Developer:
+    - GitHub:
+        - abbr: GH
+          href: "https://github.com/"
+          icon: github.png
+
+    - Stack Overflow:
+        - abbr: SO
+          href: "https://stackoverflow.com/"
+          icon: si-stackoverflow
+
+    - Docker Hub:
+        - abbr: DH
+          href: "https://hub.docker.com/"
+          icon: si-docker
+
+    - VS Code Docs:
+        - abbr: VS
+          href: "https://code.visualstudio.com/docs"
+          icon: si-visualstudiocode
+
+    - ChatGPT:
+        - abbr: CG
+          href: "https://chat.openai.com/"
+          icon: chatgpt.png
+
+- Communication:
+    - Gmail:
+        - abbr: GM
+          href: "https://mail.google.com/"
+          icon: gmail.png
+
+    - Slack:
+        - abbr: SL
+          href: "https://app.slack.com/client"
+          icon: si-slack
+
+- Networking:
+    - Twingate:
+        - abbr: TG
+          href: "https://homelab118.twingate.com/"
+          icon: twingate.png
+
+    - Cloudflare:
+        - abbr: CF
+          href: "https://dash.cloudflare.com/"
+          icon: si-cloudflare
+
+    - Speedtest:
+        - abbr: ST
+          href: "https://www.speedtest.net/"
+          icon: si-speedtest

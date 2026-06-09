@@ -1,0 +1,19 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest   # Official Uptime Kuma image
+    container_name: uptime-kuma
+    restart: unless-stopped              # Always restart on failure
+
+    ports:
+      - "3001:3001"                      # Access UI at http://<ho>
+
+    volumes:
+      - uptime-kuma-data:/app/data       # Persistent storage for settings &>
+      - /var/run/docker.sock:/var/run/docker.sock # docker socket mount.
+
+    environment:
+      - TZ=Asia/Kolkata                  # Set your local timezone (optional)
+
+volumes:
+  uptime-kuma-data:                     # Named volume for persistent data
+

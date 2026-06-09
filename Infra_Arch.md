@@ -7,7 +7,7 @@
 | Device | Hostname | IP Address | Role |
 |---------|----------|------------|------|
 | HP Mini PC | pve-main.homelab118.home | 192.168.1.110 | Main Proxmox node |
-| Sony Laptop | pve-backup.homelab118.home | 192.168.1.111 | Secondary Proxmox node |
+| Sony Laptop | pve-1.homelab118.home (Node: proxmox) | 192.168.1.111 | Secondary Proxmox node |
 
 ---
 
@@ -124,7 +124,7 @@ Testing / Temporary
 ## Hypervisors
 
 pve-main.homelab118.home  
-pve-backup.homelab118.home
+pve-1.homelab118.home
 
 ## Infrastructure
 

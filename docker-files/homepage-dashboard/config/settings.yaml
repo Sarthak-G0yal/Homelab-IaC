@@ -1,0 +1,85 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/settings/
+
+title: Homelab 118 Dashboard
+description: Service command center for infra, automation, and personal tools
+
+theme: dark
+color: slate
+headerStyle: boxedWidgets
+iconStyle: theme
+target: _blank
+statusStyle: dot
+hideVersion: true
+disableIndexing: true
+useEqualHeights: true
+fullWidth: true
+maxGroupColumns: 6
+maxBookmarkGroupColumns: 6
+
+quicklaunch:
+  searchDescriptions: true
+  showSearchSuggestions: true
+  provider: duckduckgo
+  mobileButtonPosition: bottom-right
+
+background:
+  image: /images/wallpaper.jpg
+  blur: md
+  saturate: 100
+  brightness: 70
+  opacity: 70
+
+cardBlur: sm
+
+layout:
+  Infrastructure:
+    style: row
+    columns: 2
+    icon: mdi-server-network-outline
+    tab: Core
+  Monitoring:
+    style: row
+    columns: 2
+    icon: mdi-chart-line
+    tab: Core
+  Networking & Security:
+    style: row
+    columns: 2
+    icon: mdi-shield-lock-outline
+    tab: Core
+  Dev & Automation:
+    style: row
+    columns: 3
+    icon: mdi-rocket-launch-outline
+    tab: Build
+  Personal Tools:
+    style: row
+    columns: 3
+    icon: mdi-briefcase-variant-outline
+    tab: Build
+  Media:
+    style: row
+    columns: 2
+    icon: mdi-play-box-multiple-outline
+    tab: Media
+  Developer:
+    style: row
+    columns: 3
+    icon: mdi-code-braces
+    tab: Links
+  Communication:
+    style: row
+    columns: 3
+    icon: mdi-email-outline
+    tab: Links
+  Networking:
+    style: row
+    columns: 3
+    icon: mdi-lan
+    tab: Links
+
+providers:
+  openweathermap: openweathermapapikey
+  weatherapi: weatherapiapikey

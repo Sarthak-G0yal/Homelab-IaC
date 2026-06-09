@@ -1,0 +1,89 @@
+- Infrastructure:
+    - Proxmox:
+        icon: sh-proxmox
+        href: https://proxmox.homelab118.home
+        siteMonitor: https://proxmox.homelab118.home
+        description: Hypervisor and VM management
+
+    - Portainer:
+        icon: sh-portainer
+        href: https://portainer.homelab118.home
+        siteMonitor: https://portainer.homelab118.home
+        description: Docker container management
+
+- Monitoring:
+    - Uptime Kuma:
+        icon: sh-uptime-kuma
+        href: https://uptime.homelab118.home
+        siteMonitor: https://uptime.homelab118.home
+        description: Service uptime monitoring
+
+- Media:
+    - Jellyfin:
+        icon: sh-jellyfin
+        href: https://jellyfin.homelab118.home
+        siteMonitor: https://jellyfin.homelab118.home
+        description: Media streaming server
+
+- Networking & Security:
+    - AdGuard Home:
+        icon: sh-adguard-home
+        href: https://dns.homelab118.home
+        siteMonitor: https://dns.homelab118.home
+        description: Network-wide ad blocking
+
+    - Vaultwarden:
+        icon: sh-vaultwarden
+        href: https://vault.homelab118.home
+        siteMonitor: https://vault.homelab118.home
+        description: Password manager
+
+- Dev & Automation:
+    - n8n:
+        icon: sh-n8n
+        href: https://n8n.sarthakgoyal.tech
+        siteMonitor: https://n8n.sarthakgoyal.tech
+        description: Workflow automation
+    
+    - Jenkins:
+        icon: sh-jenkins
+        href: https://jenkins.sarthakgoyal.tech
+        siteMonitor: https://jenkins.sarthakgoyal.tech
+        description: CI/CD automation
+
+    - Gitea:
+        icon: sh-gitea
+        href: https://gitea.homelab118.home
+        siteMonitor: https://gitea.homelab118.home
+        description: Self-hosted Git service
+
+- Personal Tools:
+    - Firefly III:
+        icon: sh-firefly-iii
+        href: https://firefly.homelab118.home/
+        siteMonitor: https://firefly.homelab118.home/
+        description: Personal finance manager
+
+    - Memos:
+        icon: sh-memos
+        href: https://memos.homelab118.home
+        siteMonitor: https://memos.homelab118.home
+        description: Personal knowledge base
+
+    - Beszel:
+        icon: sh-beszel
+        href: https://beszel.homelab118.home
+        siteMonitor: https://beszel.homelab118.home
+        description: Internal utility service
+
+    - ASAP:
+        icon: sh-workout-cool
+        href: https://asap.homelab118.home
+        siteMonitor: https://asap.homelab118.home
+        description: Workout tracking utility service
+
+    - VERT:
+        icon: sh-vert
+        href: https://vert.homelab118.home
+        siteMonitor: https://vert.homelab118.home
+        description: Utility to convert files

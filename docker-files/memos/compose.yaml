@@ -1,0 +1,22 @@
+services:
+  memos:
+    image: neosmemo/memos:0.21.0
+    restart: unless-stopped
+    ports:
+      - "5230:5230"
+    volumes:
+      - ./data:/var/opt/memos
+    environment:
+      - MEMOS_PORT=5230
+      - MEMOS_DRIVER=sqlite
+      - MEMOS_INSTANCE_URL=https://memos.homelab118.home
+    labels:
+      - wud.watch=true
+      - wud.tag.include=^\d+\.\d+\.\d+$$
+      - wud.trigger.include=dockercompose.auto
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

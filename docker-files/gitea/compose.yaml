@@ -1,0 +1,20 @@
+services:
+  server:
+    image: docker.gitea.com/gitea:1.25.3
+    container_name: gitea
+    environment:
+      - USER_UID=${USER_UID}
+      - USER_GID=${USER_GID}
+      - GITEA__database__DB_TYPE=${GITEA__database__DB_TYPE}
+      - GITEA__database__HOST=${GITEA__database__HOST}
+      - GITEA__database__NAME=${GITEA__database__NAME}
+      - GITEA__database__USER=${GITEA__database__USER}
+      - GITEA__database__PASSWD=${GITEA__database__PASSWD}
+    restart: always
+    volumes:
+      - ./gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "4000:4000"
+      - "222:222"
