@@ -63,7 +63,7 @@
 
 - name: Sync docker-files to container
   ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../docker-files/"
+    src: "{{ playbook_dir }}/../../docker-files/"
     dest: /home/server/docker/
     directory_mode: '0755'
     owner: root
