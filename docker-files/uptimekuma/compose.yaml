@@ -11,8 +11,8 @@ services:
       - uptime-kuma-data:/app/data       # Persistent storage for settings &>
       - /var/run/docker.sock:/var/run/docker.sock # docker socket mount.
 
-    environment:
-      - TZ=Asia/Kolkata                  # Set your local timezone (optional)
+    env_file:
+      - .env
 
 volumes:
   uptime-kuma-data:                     # Named volume for persistent data

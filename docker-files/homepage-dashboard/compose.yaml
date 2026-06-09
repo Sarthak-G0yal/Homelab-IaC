@@ -9,7 +9,5 @@ services:
       - ./config:/app/config # Make sure your local config directory exists
       - ./images:/app/public/images
       - ./icons:/app/public/icons
-    environment:
-      PUID: 1000
-      PGID: 1000
-      HOMEPAGE_ALLOWED_HOSTS: dashboard.homelab118.home
+    env_file:
+      - .env

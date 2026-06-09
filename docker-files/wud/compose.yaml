@@ -6,14 +6,8 @@ services:
       - "3002:3000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:rw
-    environment:
-      - WUD_LOG_LEVEL=info
-      - WUD_WATCHER_DOCKER_LOCAL_CRON=0 0 3 * * *
-      - WUD_WATCHER_DOCKER_LOCAL_PRUNE=true
-      - WUD_TRIGGER_DOCKERCOMPOSE_AUTO_FILE=/var/run/docker.sock
-      - WUD_TRIGGER_DOCKERCOMPOSE_AUTO_PRUNE=true
-      - WUD_TRIGGER_DISCORD_NOTIFY_ONLY_URL=${DISCORD_WEBHOOK_URL}
-      - WUD_TRIGGER_DISCORD_NOTIFY_ONLY_TITLE=Updates Available
+    env_file:
+      - .env
     labels:
       - wud.watch=true
       - wud.tag.include=^\d+\.\d+\.\d+$$
