@@ -23,7 +23,7 @@ traefik_http_services:
 
   - name: vault
     host: "vault.{{ traefik_domain }}"
-    url: "http://192.168.1.124:8000"
+    url: "http://192.168.1.131:8000"
 
   - name: dns
     host: "dns.{{ traefik_domain }}"
@@ -31,43 +31,43 @@ traefik_http_services:
 
   - name: dashboard
     host: "dashboard.{{ traefik_domain }}"
-    url: "http://192.168.1.124:3000"
+    url: "http://192.168.1.131:3000"
 
   - name: portainer
     host: "portainer.{{ traefik_domain }}"
-    url: "http://192.168.1.124:9000"
+    url: "http://192.168.1.131:9000"
 
   - name: n8n
     host: "n8n.{{ traefik_domain }}"
-    url: "http://192.168.1.124:5678"
+    url: "http://192.168.1.131:5678"
     middlewares:
       - n8n-headers
 
   - name: git
     host: "git.{{ traefik_domain }}"
-    url: "http://192.168.1.124:4000"
+    url: "http://192.168.1.131:4000"
 
   - name: asap
     host: "asap.{{ traefik_domain }}"
-    url: "http://192.168.1.124:5173"
+    url: "http://192.168.1.131:3005"
 
   - name: vert
     host: "vert.{{ traefik_domain }}"
-    url: "http://192.168.1.124:3001"
+    url: "http://192.168.1.131:3080"
   
   - name: wud
     host: "wud.{{ traefik_domain }}"
-    url: "http://192.168.1.124:3002"
+    url: "http://192.168.1.131:3002"
 
   - name: firefly
-    host: "firefly.{{ traefik_domain }}"
-    url: "http://192.168.1.124:8080"
+    host: "money.{{ traefik_domain }}"
+    url: "http://192.168.1.131:8080"
 
   - name: memos
     host: "memos.{{ traefik_domain }}"
-    url: "http://192.168.1.124:5230"
+    url: "http://192.168.1.131:5230"
 
   - name: uptime
     host: "uptime.{{ traefik_domain }}"
-    url: "http://192.168.1.124:3001"
+    url: "http://192.168.1.131:3001"
     enabled: false
