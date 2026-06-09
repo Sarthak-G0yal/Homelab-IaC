@@ -89,4 +89,12 @@ resource "proxmox_virtual_environment_container" "this" {
     nesting = var.nesting
     keyctl  = var.keyctl
   }
+
+  lifecycle {
+    ignore_changes = [
+      mount_point,
+      operating_system[0].template_file_id,
+      initialization[0].user_account
+    ]
+  }
 }

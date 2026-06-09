@@ -70,7 +70,28 @@ When you run `terraform apply` inside any of the directories, Terraform automati
    terraform init
    terraform apply
    ```
+
+> [!TIP]
+> **Targeted Deployments (Create only what is needed)**: To prevent Terraform from checking or modifying other existing LXC containers that might have drifted, use the `-target` flag to only plan or apply a specific module (e.g., `server_docker`):
+> ```bash
+> terraform plan -target=module.server_docker
+> terraform apply -target=module.server_docker
+> ```
+> This will ignore the rest of the containers and only focus on the target.
+
+> [!IMPORTANT]
+> **Importing Existing Containers**: If a container already exists on Proxmox but is not tracked in the current Terraform state (which would cause a collision or a recreate plan), import it before applying:
+> ```bash
+> terraform import module.<module_name>.proxmox_virtual_environment_container.this <node_name>/<vmid>
+> ```
+> For example, to import the Jenkins container on node `proxmox` with VMID `207`:
+> ```bash
+> terraform import module.jenkins.proxmox_virtual_environment_container.this proxmox/207
+> ```
+> *Note: If importing new modules, always run `terraform init` first to download the necessary provider blocks.*
+
 *Note: If deploying the **Plex** LXC, you must manually add the Intel QuickSync device mappings to `/etc/pve/lxc/202.conf` on the Proxmox host after Terraform finishes.*
+
 
 ### 2. Configure Services (Ansible)
 1. Navigate to the Ansible directory: `cd ansible`
@@ -178,7 +199,11 @@ To expose Jenkins to the internet securely without port-forwarding, you must man
 Since the Proxmox API token is restricted from modifying security feature flags other than `nesting` via the API, the `keyctl` feature must be enabled manually on the Proxmox host (`proxmox`) using the CLI to support Docker inside the container:
 ```bash
 # Run this on your Proxmox host CLI (proxmox)
+# For Jenkins (VMID 207)
 pct set 207 -features keyctl=1
+
+# For Server Docker (VMID 206)
+pct set 206 -features keyctl=1
 ```
 
 ### Security / Firewall
