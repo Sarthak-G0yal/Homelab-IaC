@@ -1,0 +1,3 @@
+---
+# Set to false in plays targeting hosts that should not receive docker-files
+sync_docker_files: true

@@ -1,0 +1,8 @@
+---
+- name: Configure BastionVault host
+  hosts: bastion_vault
+  become: true
+  roles:
+    - role: server-docker
+      vars:
+        sync_docker_files: false

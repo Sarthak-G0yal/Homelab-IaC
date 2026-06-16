@@ -1,3 +1,5 @@
+# ── Proxmox provider ──────────────────────────────────────────────────────────
+
 variable "proxmox_api_url" {
   type        = string
   description = "Proxmox API URL (e.g. https://proxmox:8006/api2/json)"
@@ -20,12 +22,15 @@ variable "proxmox_tls_insecure" {
   default     = true
 }
 
+# ── SSH ───────────────────────────────────────────────────────────────────────
+
 variable "ssh_public_key_path" {
   type        = string
   description = "Path to SSH public key on the infra host"
   default     = "~/.ssh/id_ed25519.pub"
 }
 
+# ── Shared LXC defaults ───────────────────────────────────────────────────────
 
 variable "lxc_datastore_id" {
   type        = string
@@ -45,7 +50,6 @@ variable "lxc_bridge" {
   default     = "vmbr0"
 }
 
-
 variable "lxc_ipv4_gateway" {
   type        = string
   description = "IPv4 gateway"
@@ -64,6 +68,12 @@ variable "lxc_dns_servers" {
   default     = ["192.168.1.120"]
 }
 
+variable "lxc_root_password" {
+  type        = string
+  description = "Optional root password"
+  default     = null
+  sensitive   = true
+}
 
 variable "lxc_start_on_boot" {
   type        = bool
@@ -101,36 +111,7 @@ variable "lxc_template_verify" {
   default     = false
 }
 
-variable "lxc_root_password" {
-  type        = string
-  description = "Optional root password"
-  default     = null
-  sensitive   = true
-}
-
-variable "plex_config" {
-  type = object({
-    node_name    = string
-    vm_id        = number
-    ipv4_address = string
-    disk_size_gb = number
-    memory_mb    = number
-    cpu_cores    = number
-  })
-  description = "Configuration settings for the Plex LXC container"
-}
-
-variable "jenkins_config" {
-  type = object({
-    node_name    = string
-    vm_id        = number
-    ipv4_address = string
-    disk_size_gb = number
-    memory_mb    = number
-    cpu_cores    = number
-  })
-  description = "Configuration settings for the Jenkins LXC container"
-}
+# ── server-docker-specific ────────────────────────────────────────────────────
 
 variable "server_docker_config" {
   type = object({

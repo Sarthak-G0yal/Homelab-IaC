@@ -3,7 +3,7 @@ data "local_file" "ssh_key" {
 }
 
 module "streaming" {
-  source = "../../../modules/lxc"
+  source = "../../../../modules/lxc"
 
   node_name             = var.plex_config.node_name
   vm_id                 = var.plex_config.vm_id

@@ -60,6 +60,7 @@
     path: /home/server/docker
     state: directory
     mode: '0755'
+  when: sync_docker_files | default(true)
 
 - name: Sync docker-files to container
   ansible.builtin.copy:
@@ -68,3 +69,4 @@
     directory_mode: '0755'
     owner: root
     group: root
+  when: sync_docker_files | default(true)

@@ -6,9 +6,12 @@ This repository manages a modular Homelab environment on Proxmox using **Terrafo
 
 - **Networking**: Dedicated reverse proxy container running Traefik (VMID 110).
 - **Databases**: Unified database server running PostgreSQL 16 and MongoDB 4.4 (VMID 300).
-- **Applications**: 
-  - Plex Media Server running in a Privileged LXC with Intel QuickSync GPU Passthrough and UFW firewall (VMID 202).
-  - Jenkins CI/CD Server running in an Unprivileged LXC with Docker-in-LXC (VMID 207).
+- **Applications**:
+  - Plex Media Server — Privileged LXC, Intel QuickSync GPU passthrough (VMID 202).
+  - Jenkins CI/CD Server — Unprivileged LXC with Docker-in-LXC (VMID 207).
+  - Server Docker — General-purpose Docker host for Compose stacks (VMID 206).
+- **Infrastructure**:
+  - BastionVault — Centralised secrets platform (VMID 403, IP 192.168.1.153).
 
 ## Repository Structure
 
@@ -17,47 +20,86 @@ infra/
 ├── terraform/
 │   ├── environments/
 │   │   └── homelab/
-│   │       ├── secrets.auto.tfvars        # Centralized secrets (API keys, SSH paths)
-│   │       ├── applications/              # Plex Media Server
+│   │       ├── secrets.auto.tfvars            # ← Single shared secrets file (gitignored)
+│   │       ├── secrets.auto.tfvars.example    # ← Committed template
+│   │       ├── networking/                    # Traefik Reverse Proxy (VMID 110)
 │   │       │   ├── main.tf
 │   │       │   ├── secrets.auto.tfvars -> ../secrets.auto.tfvars
-│   │       │   └── terraform.tfvars       # App-specific configs
-│   │       ├── databases/                 # Postgres & MongoDB
+│   │       │   └── terraform.tfvars
+│   │       ├── databases/                     # Postgres & MongoDB (VMID 300)
 │   │       │   ├── main.tf
-│   │       │   └── secrets.auto.tfvars -> ../secrets.auto.tfvars
-│   │       └── networking/                # Traefik Reverse Proxy
-│   │           ├── main.tf
-│   │           └── secrets.auto.tfvars -> ../secrets.auto.tfvars
+│   │       │   ├── secrets.auto.tfvars -> ../secrets.auto.tfvars
+│   │       │   └── terraform.tfvars
+│   │       ├── applications/
+│   │       │   ├── streaming/                 # Plex Media Server (VMID 202)
+│   │       │   │   ├── main.tf
+│   │       │   │   ├── secrets.auto.tfvars -> ../../secrets.auto.tfvars
+│   │       │   │   └── terraform.tfvars
+│   │       │   ├── jenkins/                   # Jenkins CI/CD (VMID 207)
+│   │       │   │   ├── main.tf
+│   │       │   │   ├── secrets.auto.tfvars -> ../../secrets.auto.tfvars
+│   │       │   │   └── terraform.tfvars
+│   │       │   └── server-docker/             # Docker host (VMID 206)
+│   │       │       ├── main.tf
+│   │       │       ├── secrets.auto.tfvars -> ../../secrets.auto.tfvars
+│   │       │       └── terraform.tfvars
+│   │       └── infrastructure/
+│   │           └── bastion-vault/             # Secrets platform (VMID 403)
+│   │               ├── main.tf
+│   │               ├── secrets.auto.tfvars -> ../../secrets.auto.tfvars
+│   │               └── terraform.tfvars
 │   └── modules/
-│       └── lxc/                           # Reusable Proxmox LXC Module
+│       └── lxc/                               # Reusable Proxmox LXC module
 ├── ansible/
 │   ├── ansible.cfg
 │   ├── inventory/
-│   │   ├── hosts.ini                      # Defines [databases], [applications], [reverse_proxy]
-│   │   ├── group_vars/                    # Configs like Traefik routing
-│   │   │   └── all/
-│   │   │       ├── main.yml               # Base variables
-│   │   │       └── secrets.yml            # Centralized Ansible Secrets (IPs, DB passwords)
+│   │   ├── hosts.ini                          # All host groups
+│   │   └── group_vars/
+│   │       └── all/
+│   │           ├── main.yml                   # Base variables
+│   │           └── secrets.yml                # Ansible secrets (gitignored)
 │   ├── playbooks/
-│   │   ├── applications.yml               # Runs Plex & Jenkins roles
-│   │   ├── databases.yml                  # Runs Postgres & MongoDB roles
-│   │   └── reverse-proxy.yml              # Runs Traefik role
+│   │   ├── applications.yml
+│   │   ├── databases.yml
+│   │   ├── reverse-proxy.yml
+│   │   └── bastion-vault.yml
 │   └── roles/
-│       ├── jenkins/                       # Installs Java 21, Jenkins, Docker for CI/CD
-│       ├── mongodb/                       # Installs MongoDB 4.4 (Non-AVX compatible)
-│       ├── plex/                          # Installs Plex & UFW, configures QuickSync groups
-│       ├── backup/                        # Configures automated daily backups
-│       ├── database/                      # Installs Postgres 16, configures SCRAM-SHA-256
-│       └── traefik/                       # Installs Traefik natively
+│       ├── server-docker/                     # Docker CE install (reused by bastion-vault)
+│       ├── jenkins/
+│       ├── mongodb/
+│       ├── plex/
+│       ├── backup/
+│       ├── database/
+│       └── traefik/
 └── README.md
 ```
 
 ## Terraform Architecture: Centralized Variables
 
-To prevent duplicating sensitive API tokens and Proxmox credentials across multiple Terraform states, we use a centralized `secrets.auto.tfvars` file located at `terraform/environments/homelab/secrets.auto.tfvars`.
+Proxmox API credentials are stored once at `terraform/environments/homelab/secrets.auto.tfvars` (gitignored). Every Terraform root module inside `homelab/` contains a **symbolic link** to this single file. Terraform auto-loads `*.auto.tfvars` from the working directory, so credentials are available to every submodule without duplication.
 
-Each subdirectory (`applications/`, `databases/`, `networking/`) contains a **symbolic link** to this central file. 
-When you run `terraform apply` inside any of the directories, Terraform automatically loads the global variables from the symlink, while allowing you to define local app configurations in the directory's specific `terraform.tfvars`.
+Application-specific settings (VM ID, IP, disk size, etc.) live in each subdir's own `terraform.tfvars` (committed).
+
+### Secrets Bootstrap
+
+When cloning the repo for the first time, recreate the shared secrets file and all symlinks from the repo root:
+
+```bash
+# 1. Create the shared secrets file from the example
+cd terraform/environments/homelab
+cp secrets.auto.tfvars.example secrets.auto.tfvars
+# Edit it with your real Proxmox API credentials, then:
+
+# 2. Recreate all symlinks (run from repo root)
+HOMELAB=terraform/environments/homelab
+
+(cd $HOMELAB/databases              && ln -sf ../secrets.auto.tfvars    secrets.auto.tfvars)
+(cd $HOMELAB/networking             && ln -sf ../secrets.auto.tfvars    secrets.auto.tfvars)
+(cd $HOMELAB/applications/streaming && ln -sf ../../secrets.auto.tfvars secrets.auto.tfvars)
+(cd $HOMELAB/applications/jenkins   && ln -sf ../../secrets.auto.tfvars secrets.auto.tfvars)
+(cd $HOMELAB/applications/server-docker       && ln -sf ../../secrets.auto.tfvars secrets.auto.tfvars)
+(cd $HOMELAB/infrastructure/bastion-vault     && ln -sf ../../secrets.auto.tfvars secrets.auto.tfvars)
+```
 
 ## Ansible Architecture: Centralized Secrets
 
