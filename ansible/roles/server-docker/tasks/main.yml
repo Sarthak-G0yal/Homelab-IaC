@@ -6,6 +6,8 @@
       - ca-certificates
       - curl
       - software-properties-common
+      - git
+      - jq
     state: present
     update_cache: yes
 
@@ -55,18 +57,67 @@
     state: started
     enabled: yes
 
-- name: Create docker stack directory
+- name: Ensure /etc/bastionvault directory exists
   ansible.builtin.file:
-    path: /home/server/docker
+    path: /etc/bastionvault
     state: directory
-    mode: '0755'
-  when: sync_docker_files | default(true)
-
-- name: Sync docker-files to container
-  ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../../docker-files/"
-    dest: /home/server/docker/
-    directory_mode: '0755'
+    mode: '0700'
     owner: root
     group: root
+
+- name: Configure BastionVault Client ID
+  ansible.builtin.copy:
+    content: "{{ bastionvault_client_id }}"
+    dest: /etc/bastionvault/client-id
+    mode: '0600'
+    owner: root
+    group: root
+  when: bastionvault_client_id is defined
+
+- name: Configure BastionVault Client Secret
+  ansible.builtin.copy:
+    content: "{{ bastionvault_client_secret }}"
+    dest: /etc/bastionvault/client-secret
+    mode: '0600'
+    owner: root
+    group: root
+  when: bastionvault_client_secret is defined
+
+- name: Ensure /root/.ssh directory exists
+  ansible.builtin.file:
+    path: /root/.ssh
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+
+- name: Deploy GitHub SSH key
+  ansible.builtin.copy:
+    src: ~/.ssh/id_ed25519_homelab
+    dest: /root/.ssh/id_ed25519_github
+    mode: '0600'
+    owner: root
+    group: root
+
+- name: Configure SSH for GitHub
+  ansible.builtin.blockinfile:
+    path: /root/.ssh/config
+    create: yes
+    mode: '0600'
+    owner: root
+    group: root
+    block: |
+      Host github.com
+        HostName github.com
+        User git
+        IdentityFile /root/.ssh/id_ed25519_github
+        IdentitiesOnly yes
+
+- name: Clone docker-files repository
+  ansible.builtin.git:
+    repo: git@github.com:homelab118/docker-files.git
+    dest: /home/server/docker/
+    accept_hostkey: yes
+    key_file: /root/.ssh/id_ed25519_github
+    update: yes
   when: sync_docker_files | default(true)

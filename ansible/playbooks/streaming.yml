@@ -1,0 +1,6 @@
+---
+- name: Configure Streaming Server
+  hosts: streaming
+  become: yes
+  roles:
+    - plex

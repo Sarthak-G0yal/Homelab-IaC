@@ -1,9 +1,4 @@
-- name: Configure Streaming Server
-  hosts: streaming
-  become: yes
-  roles:
-    - plex
-
+---
 - name: Configure Server Docker
   hosts: server-docker
   become: yes
