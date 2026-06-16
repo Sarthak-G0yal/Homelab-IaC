@@ -17,26 +17,27 @@ infra/
 ├── terraform/
 │   ├── environments/
 │   │   └── homelab/
-│   │       ├── common.auto.tfvars         # Centralized common variables (API keys, SSH paths)
+│   │       ├── secrets.auto.tfvars        # Centralized secrets (API keys, SSH paths)
 │   │       ├── applications/              # Plex Media Server
 │   │       │   ├── main.tf
-│   │       │   ├── common.auto.tfvars -> ../common.auto.tfvars
-│   │       │   └── terraform.tfvars       # App-specific overrides
+│   │       │   ├── secrets.auto.tfvars -> ../secrets.auto.tfvars
+│   │       │   └── terraform.tfvars       # App-specific configs
 │   │       ├── databases/                 # Postgres & MongoDB
 │   │       │   ├── main.tf
-│   │       │   ├── common.auto.tfvars -> ../common.auto.tfvars
-│   │       │   └── terraform.tfvars
+│   │       │   └── secrets.auto.tfvars -> ../secrets.auto.tfvars
 │   │       └── networking/                # Traefik Reverse Proxy
 │   │           ├── main.tf
-│   │           ├── common.auto.tfvars -> ../common.auto.tfvars
-│   │           └── terraform.tfvars
+│   │           └── secrets.auto.tfvars -> ../secrets.auto.tfvars
 │   └── modules/
 │       └── lxc/                           # Reusable Proxmox LXC Module
 ├── ansible/
 │   ├── ansible.cfg
 │   ├── inventory/
-│   │   ├── hosts.ini                      # Defines [postgres], [applications], [reverse_proxy]
-│   │   └── group_vars/                    # Configs like DB passwords, listening ports
+│   │   ├── hosts.ini                      # Defines [databases], [applications], [reverse_proxy]
+│   │   └── group_vars/                    # Configs like Traefik routing
+│   ├── group_vars/
+│   │   └── all/
+│   │       └── secrets.yml                # Centralized Ansible Secrets (IPs, DB passwords)
 │   ├── playbooks/
 │   │   ├── applications.yml               # Runs Plex & Jenkins roles
 │   │   ├── databases.yml                  # Runs Postgres & MongoDB roles
@@ -45,17 +46,23 @@ infra/
 │       ├── jenkins/                       # Installs Java 21, Jenkins, Docker for CI/CD
 │       ├── mongodb/                       # Installs MongoDB 4.4 (Non-AVX compatible)
 │       ├── plex/                          # Installs Plex & UFW, configures QuickSync groups
-│       ├── postgres/                      # Installs Postgres 16, configures SCRAM-SHA-256
+│       ├── backup/                        # Configures automated daily backups
+│       ├── database/                      # Installs Postgres 16, configures SCRAM-SHA-256
 │       └── traefik/                       # Installs Traefik natively
 └── README.md
 ```
 
 ## Terraform Architecture: Centralized Variables
 
-To prevent duplicating sensitive API tokens and Proxmox credentials across multiple Terraform states, we use a centralized `common.auto.tfvars` file located at `terraform/environments/homelab/common.auto.tfvars`.
+To prevent duplicating sensitive API tokens and Proxmox credentials across multiple Terraform states, we use a centralized `secrets.auto.tfvars` file located at `terraform/environments/homelab/secrets.auto.tfvars`.
 
 Each subdirectory (`applications/`, `databases/`, `networking/`) contains a **symbolic link** to this central file. 
-When you run `terraform apply` inside any of the directories, Terraform automatically loads the global variables from the symlink, while allowing you to define local IP/CPU overrides in the directory's specific `terraform.tfvars`.
+When you run `terraform apply` inside any of the directories, Terraform automatically loads the global variables from the symlink, while allowing you to define local app configurations in the directory's specific `terraform.tfvars`.
+
+## Ansible Architecture: Centralized Secrets
+
+Similarly, Ansible is configured to use a single source of truth for all sensitive environment variables, credentials, and IP addresses. These are stored in `ansible/group_vars/all/secrets.yml`. 
+Roles dynamically consume variables from this file, ensuring you only ever have to update an IP address or password in one place. It is highly recommended to encrypt this file using `ansible-vault`.
 
 ## Deployment Workflow
 
@@ -64,7 +71,7 @@ When you run `terraform apply` inside any of the directories, Terraform automati
    ```bash
    cd terraform/environments/homelab/databases
    ```
-2. Ensure the `common.auto.tfvars` symlink exists and your local `terraform.tfvars` is configured.
+2. Ensure the `secrets.auto.tfvars` symlink exists and your local configurations are set.
 3. Apply the infrastructure:
    ```bash
    terraform init
@@ -141,7 +148,7 @@ scp ~/.ssh/id_ed25519_proxmox.pub infra@192.168.1.150:~/.ssh/id_ed25519_proxmox.
 ```
 
 ### 4. LXC1 (infra-mgmt): Terraform key injection
-Set the public key path used by Terraform in your `common.auto.tfvars`:
+Set the public key path used by Terraform in your `secrets.auto.tfvars`:
 ```hcl
 ssh_public_key_path = "~/.ssh/id_ed25519_proxmox.pub"
 ```

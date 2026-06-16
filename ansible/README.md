@@ -26,7 +26,7 @@ Configures an automated daily backup system for both the PostgreSQL databases an
 
 ## Variables and Secrets
 
-Sensitive variables, such as the `rclone_gdrive_token`, are stored in `group_vars/all/secrets.yml`. 
+Sensitive variables, credentials, and all Infrastructure IPs (e.g., `ip_database`, `secret_postgres_admin_password`, `secret_rclone_gdrive_token`) are stored centrally in `group_vars/all/secrets.yml`. This acts as the single source of truth for dynamic role configurations.
 You can use `ansible-vault` to encrypt this file:
 ```bash
 ansible-vault encrypt group_vars/all/secrets.yml
