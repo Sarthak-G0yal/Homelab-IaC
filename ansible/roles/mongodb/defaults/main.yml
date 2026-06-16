@@ -2,5 +2,5 @@
 mongodb_version: "4.4"
 mongodb_bind_ip: "0.0.0.0"
 mongodb_port: 27017
-mongodb_admin_user: "dbadmin"
-mongodb_admin_password: "change-me"
+mongodb_admin_user: "{{ secret_mongodb_admin_user }}"
+mongodb_admin_password: "{{ secret_mongodb_admin_password }}"

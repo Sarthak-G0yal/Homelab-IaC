@@ -1,0 +1,75 @@
+---
+- name: Ensure backup directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - /opt/backups/postgres
+    - /opt/backups/configs
+
+- name: Ensure required packages are installed
+  ansible.builtin.apt:
+    name:
+      - rclone
+      - tar
+      - git
+    state: present
+    update_cache: yes
+
+- name: Ensure .ssh directory exists for root
+  ansible.builtin.file:
+    path: /root/.ssh
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+
+- name: Copy homelab SSH key for git clone
+  ansible.builtin.copy:
+    src: ~/.ssh/id_ed25519_homelab
+    dest: /root/.ssh/id_ed25519
+    mode: '0600'
+    owner: root
+    group: root
+  when: backup_configs
+
+- name: Add github.com to known_hosts
+  ansible.builtin.known_hosts:
+    name: github.com
+    key: "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl"
+    state: present
+  when: backup_configs
+
+- name: Ensure rclone config directory exists
+  ansible.builtin.file:
+    path: /root/.config/rclone
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+
+- name: Deploy rclone.conf
+  ansible.builtin.template:
+    src: rclone.conf.j2
+    dest: /root/.config/rclone/rclone.conf
+    mode: '0600'
+    owner: root
+    group: root
+
+- name: Deploy backup script
+  ansible.builtin.template:
+    src: backup.sh.j2
+    dest: /usr/local/bin/backup.sh
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Set up daily cron job for backup
+  ansible.builtin.cron:
+    name: "Daily Homelab Backup"
+    minute: "0"
+    hour: "3"
+    job: "/usr/local/bin/backup.sh >> /var/log/backup.log 2>&1"
+    user: root
+    state: present

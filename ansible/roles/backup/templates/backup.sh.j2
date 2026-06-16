@@ -1,0 +1,47 @@
+#!/bin/bash
+set -e
+
+DATE=$(date +%Y-%m-%d)
+BACKUP_ROOT="/opt/backups"
+POSTGRES_DIR="$BACKUP_ROOT/postgres/$DATE"
+CONFIGS_DIR="$BACKUP_ROOT/configs/$DATE"
+
+# Ensure directories exist
+mkdir -p "$POSTGRES_DIR"
+mkdir -p "$CONFIGS_DIR"
+
+{% if backup_postgres %}
+echo "Starting PostgreSQL backup..."
+# Globals (users, roles, etc.)
+sudo -u postgres pg_dumpall --globals-only > "$POSTGRES_DIR/globals.sql"
+
+{% for db in postgres_databases %}
+echo "Backing up database: {{ db }}"
+sudo -u postgres pg_dump -Fc "{{ db }}" > "$POSTGRES_DIR/{{ db }}.backup"
+{% endfor %}
+{% endif %}
+
+{% if backup_configs %}
+echo "Starting Configs backup..."
+TMP_GIT_DIR=$(mktemp -d)
+echo "Cloning docker-files repository..."
+git clone git@github.com:homelab118/docker-files.git "$TMP_GIT_DIR/docker-files"
+
+# Archive configurations
+tar -czf "$CONFIGS_DIR/configs.tar.gz" -C "$TMP_GIT_DIR" docker-files
+rm -rf "$TMP_GIT_DIR"
+{% endif %}
+
+echo "Syncing backups to Google Drive..."
+rclone sync "$BACKUP_ROOT/postgres/" "{{ backup_gdrive_remote }}/postgres/"
+rclone sync "$BACKUP_ROOT/configs/" "{{ backup_gdrive_remote }}/configs/"
+
+echo "Enforcing local retention ({{ backup_retention_local }} days)..."
+find "$BACKUP_ROOT/postgres" -mindepth 1 -maxdepth 1 -type d -mtime +{{ backup_retention_local - 1 }} -exec rm -rf {} \;
+find "$BACKUP_ROOT/configs" -mindepth 1 -maxdepth 1 -type d -mtime +{{ backup_retention_local - 1 }} -exec rm -rf {} \;
+
+echo "Enforcing remote retention ({{ backup_retention_remote }} days)..."
+rclone delete "{{ backup_gdrive_remote }}/postgres" --min-age {{ backup_retention_remote }}d --rmdirs
+rclone delete "{{ backup_gdrive_remote }}/configs" --min-age {{ backup_retention_remote }}d --rmdirs
+
+echo "Backup completed successfully!"

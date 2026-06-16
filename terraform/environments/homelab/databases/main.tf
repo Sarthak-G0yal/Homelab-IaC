@@ -2,12 +2,12 @@ data "local_file" "ssh_key" {
   filename = pathexpand(var.ssh_public_key_path)
 }
 
-module "postgres" {
+module "database" {
   source = "../../../modules/lxc"
 
   node_name             = var.lxc_node_name
   vm_id                 = 300
-  hostname              = "postgres"
+  hostname              = "database"
   datastore_id          = var.lxc_datastore_id
   template_datastore_id = var.lxc_template_datastore_id
   bridge                = var.lxc_bridge
@@ -28,5 +28,5 @@ module "postgres" {
   template_file_name    = var.lxc_template_file_name
   template_url          = local.lxc_template_url
   template_verify       = var.lxc_template_verify
-  tags                  = ["database", "postgres"]
+  tags                  = ["database"]
 }

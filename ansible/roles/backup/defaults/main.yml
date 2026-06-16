@@ -1,0 +1,11 @@
+---
+backup_enabled: true
+backup_retention_local: 1
+backup_retention_remote: 7
+backup_gdrive_remote: "gdrive:Homelab-Backups"
+
+# Backup what
+backup_postgres: false
+postgres_databases: []
+
+backup_configs: false
