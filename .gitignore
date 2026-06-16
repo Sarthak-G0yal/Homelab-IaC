@@ -9,7 +9,6 @@
 **/.terraform/*
 
 # .tfstate files
-*.tfstate
 *.tfstate.*
 
 # Crash log files
@@ -20,7 +19,7 @@ crash.*.log
 # password, private keys, and other secrets. These should not be part of version
 # control as they are data points which are potentially sensitive and subject
 # to change depending on the environment.
-*.tfvars
+*secrets.auto.tfvars
 *.tfvars.json
 
 # Ignore override files as they are usually used to override resources locally and so
@@ -65,4 +64,3 @@ Backups
 *.db
 db
 *asp*
-secrets.auto.tfvars
