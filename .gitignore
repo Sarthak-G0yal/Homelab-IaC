@@ -65,3 +65,4 @@ Backups
 *.db
 db
 *asp*
+secrets.auto.tfvars

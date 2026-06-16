@@ -1,9 +1,3 @@
-proxmox_api_url      = "https://proxmox:8006/api2/json"
-proxmox_token_id     = "root@pam!terraform"
-proxmox_token_secret = "change-me"
-
-# Application Configurations
-
 plex_config = {
   node_name    = "pve-main"
   vm_id        = 202

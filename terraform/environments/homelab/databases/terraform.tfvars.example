@@ -1,7 +1,3 @@
-proxmox_api_url      = "https://proxmox:8006/api2/json"
-proxmox_token_id     = "root@pam!terraform"
-proxmox_token_secret = "change-me"
-
 # Optional overrides
 # lxc_node_name = "proxmox"
 # lxc_vm_id = 110
