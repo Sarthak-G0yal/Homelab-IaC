@@ -34,10 +34,10 @@ infra/
 │   ├── ansible.cfg
 │   ├── inventory/
 │   │   ├── hosts.ini                      # Defines [databases], [applications], [reverse_proxy]
-│   │   └── group_vars/                    # Configs like Traefik routing
-│   ├── group_vars/
-│   │   └── all/
-│   │       └── secrets.yml                # Centralized Ansible Secrets (IPs, DB passwords)
+│   │   ├── group_vars/                    # Configs like Traefik routing
+│   │   │   └── all/
+│   │   │       ├── main.yml               # Base variables
+│   │   │       └── secrets.yml            # Centralized Ansible Secrets (IPs, DB passwords)
 │   ├── playbooks/
 │   │   ├── applications.yml               # Runs Plex & Jenkins roles
 │   │   ├── databases.yml                  # Runs Postgres & MongoDB roles
@@ -61,7 +61,7 @@ When you run `terraform apply` inside any of the directories, Terraform automati
 
 ## Ansible Architecture: Centralized Secrets
 
-Similarly, Ansible is configured to use a single source of truth for all sensitive environment variables, credentials, and IP addresses. These are stored in `ansible/group_vars/all/secrets.yml`. 
+Similarly, Ansible is configured to use a single source of truth for all sensitive environment variables, credentials, and IP addresses. These are stored in `ansible/inventory/group_vars/all/secrets.yml`. 
 Roles dynamically consume variables from this file, ensuring you only ever have to update an IP address or password in one place. It is highly recommended to encrypt this file using `ansible-vault`.
 
 ## Deployment Workflow

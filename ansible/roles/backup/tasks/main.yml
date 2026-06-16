@@ -6,40 +6,21 @@
     mode: '0755'
   with_items:
     - /opt/backups/postgres
-    - /opt/backups/configs
+    - /opt/backups/mongodb
+
+- name: Remove old configs backup directory if it exists
+  ansible.builtin.file:
+    path: /opt/backups/configs
+    state: absent
 
 - name: Ensure required packages are installed
   ansible.builtin.apt:
     name:
       - rclone
       - tar
-      - git
+      - mongodb-org-tools
     state: present
     update_cache: yes
-
-- name: Ensure .ssh directory exists for root
-  ansible.builtin.file:
-    path: /root/.ssh
-    state: directory
-    mode: '0700'
-    owner: root
-    group: root
-
-- name: Copy homelab SSH key for git clone
-  ansible.builtin.copy:
-    src: ~/.ssh/id_ed25519_homelab
-    dest: /root/.ssh/id_ed25519
-    mode: '0600'
-    owner: root
-    group: root
-  when: backup_configs
-
-- name: Add github.com to known_hosts
-  ansible.builtin.known_hosts:
-    name: github.com
-    key: "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl"
-    state: present
-  when: backup_configs
 
 - name: Ensure rclone config directory exists
   ansible.builtin.file:

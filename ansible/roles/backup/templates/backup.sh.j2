@@ -4,44 +4,66 @@ set -e
 DATE=$(date +%Y-%m-%d)
 BACKUP_ROOT="/opt/backups"
 POSTGRES_DIR="$BACKUP_ROOT/postgres/$DATE"
-CONFIGS_DIR="$BACKUP_ROOT/configs/$DATE"
+MONGO_DIR="$BACKUP_ROOT/mongodb/$DATE"
 
 # Ensure directories exist
 mkdir -p "$POSTGRES_DIR"
-mkdir -p "$CONFIGS_DIR"
+mkdir -p "$MONGO_DIR"
 
-{% if backup_postgres %}
+# --- PostgreSQL Backup ---
 echo "Starting PostgreSQL backup..."
-# Globals (users, roles, etc.)
+
+# Globals (users, roles, tablespaces)
 sudo -u postgres pg_dumpall --globals-only > "$POSTGRES_DIR/globals.sql"
 
-{% for db in postgres_databases %}
-echo "Backing up database: {{ db }}"
-sudo -u postgres pg_dump -Fc "{{ db }}" > "$POSTGRES_DIR/{{ db }}.backup"
-{% endfor %}
-{% endif %}
+# Auto-discover all non-system databases and dump each one
+DATABASES=$(sudo -u postgres psql -t -A -c "SELECT datname FROM pg_database WHERE datistemplate = false AND datname NOT IN ('postgres');")
 
-{% if backup_configs %}
-echo "Starting Configs backup..."
-TMP_GIT_DIR=$(mktemp -d)
-echo "Cloning docker-files repository..."
-git clone git@github.com:homelab118/docker-files.git "$TMP_GIT_DIR/docker-files"
+for db in $DATABASES; do
+  echo "Backing up PostgreSQL database: $db"
+  sudo -u postgres pg_dump -Fc "$db" > "$POSTGRES_DIR/${db}.backup"
+done
 
-# Archive configurations
-tar -czf "$CONFIGS_DIR/configs.tar.gz" -C "$TMP_GIT_DIR" docker-files
-rm -rf "$TMP_GIT_DIR"
-{% endif %}
+# --- MongoDB Backup ---
+echo "Starting MongoDB backup..."
 
+# Auto-discover all non-system databases and dump each one
+MONGO_DBS=$(mongo --quiet --eval "db.adminCommand({listDatabases:1}).databases.map(d=>d.name).filter(n=>!['admin','config','local'].includes(n)).join('\n')" admin \
+  -u "{{ secret_mongodb_admin_user }}" \
+  -p "{{ secret_mongodb_admin_password }}" \
+  --authenticationDatabase admin)
+
+if [ -n "$MONGO_DBS" ]; then
+  for db in $MONGO_DBS; do
+    echo "Backing up MongoDB database: $db"
+    mongodump --host 127.0.0.1 --port {{ mongodb_port }} \
+      -u "{{ secret_mongodb_admin_user }}" \
+      -p "{{ secret_mongodb_admin_password }}" \
+      --authenticationDatabase admin \
+      --db "$db" \
+      --out "$MONGO_DIR"
+  done
+else
+  echo "No application MongoDB databases found, skipping."
+fi
+
+# --- Sync to Google Drive ---
 echo "Syncing backups to Google Drive..."
 rclone sync "$BACKUP_ROOT/postgres/" "{{ backup_gdrive_remote }}/postgres/"
-rclone sync "$BACKUP_ROOT/configs/" "{{ backup_gdrive_remote }}/configs/"
+rclone sync "$BACKUP_ROOT/mongodb/" "{{ backup_gdrive_remote }}/mongodb/"
 
+# --- Local Retention ---
 echo "Enforcing local retention ({{ backup_retention_local }} days)..."
 find "$BACKUP_ROOT/postgres" -mindepth 1 -maxdepth 1 -type d -mtime +{{ backup_retention_local - 1 }} -exec rm -rf {} \;
-find "$BACKUP_ROOT/configs" -mindepth 1 -maxdepth 1 -type d -mtime +{{ backup_retention_local - 1 }} -exec rm -rf {} \;
+find "$BACKUP_ROOT/mongodb" -mindepth 1 -maxdepth 1 -type d -mtime +{{ backup_retention_local - 1 }} -exec rm -rf {} \;
 
+# --- Remote Retention ---
 echo "Enforcing remote retention ({{ backup_retention_remote }} days)..."
-rclone delete "{{ backup_gdrive_remote }}/postgres" --min-age {{ backup_retention_remote }}d --rmdirs
-rclone delete "{{ backup_gdrive_remote }}/configs" --min-age {{ backup_retention_remote }}d --rmdirs
+if rclone lsd "{{ backup_gdrive_remote }}/postgres" &>/dev/null; then
+  rclone delete "{{ backup_gdrive_remote }}/postgres" --min-age {{ backup_retention_remote }}d --rmdirs
+fi
+if rclone lsd "{{ backup_gdrive_remote }}/mongodb" &>/dev/null; then
+  rclone delete "{{ backup_gdrive_remote }}/mongodb" --min-age {{ backup_retention_remote }}d --rmdirs
+fi
 
 echo "Backup completed successfully!"
