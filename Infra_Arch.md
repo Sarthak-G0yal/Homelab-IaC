@@ -59,6 +59,7 @@ Testing / Temporary
 | 202 | streaming-server | streaming.homelab118.home | 192.168.1.130 | Application |
 | 206 | server-docker | docker.homelab118.home | 192.168.1.131 | Application |
 | 207 | jenkins | jenkins.homelab118.home | 192.168.1.132 | Application |
+| 211 | fileserver | fileserver.homelab118.home | 192.168.1.136 | Application |
 | 300 | postgres | postgres.homelab118.home | 192.168.1.140 | Database |
 | 400 | infra-mgmt | infra.homelab118.home | 192.168.1.150 | Infrastructure |
 
@@ -138,6 +139,7 @@ adguard.homelab118.home
 docker.homelab118.home  
 jenkins.homelab118.home  
 streaming.homelab118.home
+fileserver.homelab118.home
 
 ## Databases
 
