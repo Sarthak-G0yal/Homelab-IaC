@@ -1,0 +1,19 @@
+---
+- name: Install curl
+  ansible.builtin.apt:
+    name: curl
+    state: present
+    update_cache: yes
+
+- name: Install Jellyfin using shell script
+  ansible.builtin.shell: curl -s https://repo.jellyfin.org/install-debuntu.sh | bash
+  environment:
+    SKIP_CONFIRM: "1"
+  args:
+    creates: /etc/apt/sources.list.d/jellyfin.sources
+
+- name: Allow Jellyfin through UFW
+  community.general.ufw:
+    rule: allow
+    port: "8096"
+    proto: tcp

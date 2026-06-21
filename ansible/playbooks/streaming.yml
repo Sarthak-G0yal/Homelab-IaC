@@ -1,6 +1,7 @@
 ---
-- name: Configure Streaming Server
+- name: Configure Streaming Server with Plex and Jellyfin
   hosts: streaming
   become: yes
   roles:
     - plex
+    - jellyfin
