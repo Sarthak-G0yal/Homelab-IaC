@@ -52,7 +52,7 @@ Testing / Temporary
 
 | VMID | Service | Hostname | IP Address | Category |
 |------|----------|----------|------------|----------|
-| 100 | pi-hole | dns.homelab118.home | 192.168.1.120 | Networking |
+| 100 | technitium-dns | dns.homelab118.home | 192.168.1.120 | Networking |
 | 101 | twingate-connector |  | 192.168.1.121 | Networking |
 | 102 | twingate-connector |  | 192.168.1.123 | Networking |
 | 110 | reverse-proxy | proxy.homelab118.home | 192.168.1.122 | Networking |

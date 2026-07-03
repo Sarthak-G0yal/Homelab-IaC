@@ -3,5 +3,14 @@
   gather_facts: true
   vars:
     traefik_config_src_dir: "{{ playbook_dir }}/../../configs/traefik"
+  pre_tasks:
+    - name: Fix locale
+      ansible.builtin.import_tasks: ../tasks/fix-locale.yml
+
+    - name: Update and upgrade system
+      ansible.builtin.import_tasks: ../tasks/update-upgrade.yml
+
+    - name: Enable unattended upgrades
+      ansible.builtin.import_tasks: ../tasks/enable-unattended-upgrades.yml
   roles:
     - traefik

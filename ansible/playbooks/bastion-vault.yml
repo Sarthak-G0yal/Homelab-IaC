@@ -2,6 +2,15 @@
 - name: Configure BastionVault host
   hosts: bastion_vault
   become: true
+  pre_tasks:
+    - name: Fix locale
+      ansible.builtin.import_tasks: ../tasks/fix-locale.yml
+
+    - name: Update and upgrade system
+      ansible.builtin.import_tasks: ../tasks/update-upgrade.yml
+
+    - name: Enable unattended upgrades
+      ansible.builtin.import_tasks: ../tasks/enable-unattended-upgrades.yml
   roles:
     - role: server-docker
       vars:

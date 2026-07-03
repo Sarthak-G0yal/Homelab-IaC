@@ -31,7 +31,7 @@ traefik_http_services:
 
   - name: dns
     host: "dns.{{ traefik_domain }}"
-    url: "http://192.168.1.120"
+    url: "http://192.168.1.120:5380"
 
   - name: dashboard
     host: "dashboard.{{ traefik_domain }}"

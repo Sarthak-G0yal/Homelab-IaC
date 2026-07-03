@@ -2,8 +2,8 @@ data "local_file" "ssh_key" {
   filename = pathexpand(var.ssh_public_key_path)
 }
 
-module "reverse_proxy" {
-  source = "../../../modules/lxc"
+module "dns" {
+  source = "../../../../modules/lxc"
 
   node_name             = var.lxc_node_name
   vm_id                 = var.lxc_vm_id

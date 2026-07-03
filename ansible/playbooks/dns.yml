@@ -1,7 +1,7 @@
 ---
-- name: Configure Streaming Server with Plex and Jellyfin
-  hosts: streaming
-  become: yes
+- name: Install Technitium DNS Server
+  hosts: dns
+  gather_facts: true
   pre_tasks:
     - name: Fix locale
       ansible.builtin.import_tasks: ../tasks/fix-locale.yml
@@ -12,5 +12,4 @@
     - name: Enable unattended upgrades
       ansible.builtin.import_tasks: ../tasks/enable-unattended-upgrades.yml
   roles:
-    - plex
-    - jellyfin
+    - technitium

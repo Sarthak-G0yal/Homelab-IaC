@@ -1,0 +1,32 @@
+---
+
+- name: Install prerequisites
+  ansible.builtin.apt:
+    name:
+      - curl
+      - ca-certificates
+    state: present
+
+- name: Download Technitium DNS install script
+  ansible.builtin.get_url:
+    url: https://download.technitium.com/dns/install.sh
+    dest: /tmp/technitium-install.sh
+    mode: "0755"
+
+- name: Run Technitium DNS install script
+  ansible.builtin.command:
+    cmd: bash /tmp/technitium-install.sh
+  register: technitium_install
+  changed_when: "'Technitium DNS Server was installed' in technitium_install.stdout"
+
+- name: Remove install script
+  ansible.builtin.file:
+    path: /tmp/technitium-install.sh
+    state: absent
+
+- name: Ensure Technitium DNS service is enabled and started
+  ansible.builtin.systemd:
+    name: dns
+    enabled: true
+    state: started
+    daemon_reload: true

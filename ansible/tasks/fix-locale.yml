@@ -1,0 +1,30 @@
+---
+- name: Install locales package
+  ansible.builtin.apt:
+    name: locales
+    state: present
+    update_cache: false
+  become: true
+
+- name: Generate en_US.UTF-8 locale
+  ansible.builtin.locale_gen:
+    name: en_US.UTF-8
+    state: present
+  become: true
+
+- name: Set system-wide locale defaults
+  ansible.builtin.lineinfile:
+    path: /etc/default/locale
+    regexp: "^{{ item.key }}="
+    line: "{{ item.key }}={{ item.value }}"
+    create: true
+    mode: "0644"
+  loop:
+    - { key: "LANG", value: "en_US.UTF-8" }
+    - { key: "LC_ALL", value: "en_US.UTF-8" }
+  become: true
+
+- name: Apply locale settings
+  ansible.builtin.command: update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+  changed_when: false
+  become: true

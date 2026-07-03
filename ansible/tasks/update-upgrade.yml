@@ -1,0 +1,24 @@
+---
+- name: Wait for automatic apt locks to be released
+  ansible.builtin.shell: |
+    while fuser /var/lib/dpkg/lock-frontend /var/lib/apt/lists/lock /var/cache/apt/archives/lock >/dev/null 2>&1; do
+      sleep 5
+    done
+  changed_when: false
+  become: true
+
+- name: Update and upgrade all packages (unattended)
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+    dpkg_options: "force-confdef,force-confold"
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  register: apt_upgrade
+  become: true
+
+- name: Reboot if required by upgrade
+  ansible.builtin.reboot:
+    reboot_timeout: 120
+  when: apt_upgrade.changed
+  become: true

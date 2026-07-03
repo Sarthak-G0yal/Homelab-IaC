@@ -4,7 +4,9 @@ This repository manages a modular Homelab environment on Proxmox using **Terrafo
 
 ## Current Services
 
-- **Networking**: Dedicated reverse proxy container running Traefik (VMID 110).
+- **Networking**:
+  - Technitium DNS Server — Internal DNS resolver (VMID 100).
+  - Traefik Reverse Proxy — Dedicated reverse proxy container (VMID 110).
 - **Databases**: Unified database server running PostgreSQL 16 and MongoDB 4.4 (VMID 300).
 - **Applications**:
   - Plex Media Server — Privileged LXC, Intel QuickSync GPU passthrough (VMID 202).
@@ -22,10 +24,15 @@ infra/
 │   │   └── homelab/
 │   │       ├── secrets.auto.tfvars            # ← Single shared secrets file (gitignored)
 │   │       ├── secrets.auto.tfvars.example    # ← Committed template
-│   │       ├── networking/                    # Traefik Reverse Proxy (VMID 110)
-│   │       │   ├── main.tf
-│   │       │   ├── secrets.auto.tfvars -> ../secrets.auto.tfvars
-│   │       │   └── terraform.tfvars
+│   │       ├── networking/
+│   │       │   ├── reverse-proxy/              # Traefik Reverse Proxy (VMID 110)
+│   │       │   │   ├── main.tf
+│   │       │   │   ├── secrets.auto.tfvars -> ../../secrets.auto.tfvars
+│   │       │   │   └── terraform.tfvars
+│   │       │   └── dns/                        # Technitium DNS Server (VMID 100)
+│   │       │       ├── main.tf
+│   │       │       ├── secrets.auto.tfvars -> ../../secrets.auto.tfvars
+│   │       │       └── terraform.tfvars
 │   │       ├── databases/                     # Postgres & MongoDB (VMID 300)
 │   │       │   ├── main.tf
 │   │       │   ├── secrets.auto.tfvars -> ../secrets.auto.tfvars
@@ -61,10 +68,12 @@ infra/
 │   ├── playbooks/
 │   │   ├── applications.yml
 │   │   ├── databases.yml
+│   │   ├── dns.yml
 │   │   ├── reverse-proxy.yml
 │   │   └── bastion-vault.yml
 │   └── roles/
 │       ├── server-docker/                     # Docker CE install (reused by bastion-vault)
+│       ├── technitium/                        # Technitium DNS Server install
 │       ├── jenkins/
 │       ├── mongodb/
 │       ├── plex/
@@ -93,10 +102,11 @@ cp secrets.auto.tfvars.example secrets.auto.tfvars
 # 2. Recreate all symlinks (run from repo root)
 HOMELAB=terraform/environments/homelab
 
-(cd $HOMELAB/databases              && ln -sf ../secrets.auto.tfvars    secrets.auto.tfvars)
-(cd $HOMELAB/networking             && ln -sf ../secrets.auto.tfvars    secrets.auto.tfvars)
-(cd $HOMELAB/applications/streaming && ln -sf ../../secrets.auto.tfvars secrets.auto.tfvars)
-(cd $HOMELAB/applications/jenkins   && ln -sf ../../secrets.auto.tfvars secrets.auto.tfvars)
+(cd $HOMELAB/databases                        && ln -sf ../secrets.auto.tfvars    secrets.auto.tfvars)
+(cd $HOMELAB/networking/reverse-proxy         && ln -sf ../../secrets.auto.tfvars secrets.auto.tfvars)
+(cd $HOMELAB/networking/dns                   && ln -sf ../../secrets.auto.tfvars secrets.auto.tfvars)
+(cd $HOMELAB/applications/streaming           && ln -sf ../../secrets.auto.tfvars secrets.auto.tfvars)
+(cd $HOMELAB/applications/jenkins             && ln -sf ../../secrets.auto.tfvars secrets.auto.tfvars)
 (cd $HOMELAB/applications/server-docker       && ln -sf ../../secrets.auto.tfvars secrets.auto.tfvars)
 (cd $HOMELAB/infrastructure/bastion-vault     && ln -sf ../../secrets.auto.tfvars secrets.auto.tfvars)
 ```
