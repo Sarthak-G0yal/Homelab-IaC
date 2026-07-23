@@ -10,7 +10,7 @@ traefik_http_services:
     url: "https://192.168.1.110:8006"
     servers_transport: proxmox-insecure
     flush_interval: "-1"
-  
+
   - name: proxmox-sony
     host: "pve-1.{{ traefik_domain }}"
     url: "https://192.168.1.111:8006"
@@ -53,15 +53,11 @@ traefik_http_services:
 
   - name: asap
     host: "asap.{{ traefik_domain }}"
-    url: "http://192.168.1.131:3005"
+    url: "http://192.168.1.131:5173"
 
   - name: vert
     host: "vert.{{ traefik_domain }}"
     url: "http://192.168.1.131:3080"
-  
-  - name: wud
-    host: "wud.{{ traefik_domain }}"
-    url: "http://192.168.1.131:3002"
 
   - name: firefly
     host: "money.{{ traefik_domain }}"
@@ -79,4 +75,14 @@ traefik_http_services:
   - name: bastionvault
     host: "bastionvault.{{ traefik_domain }}"
     url: "http://192.168.1.153:8080"
+    enabled: true
+
+  - name: sencho
+    host: "sencho.{{ traefik_domain }}"
+    url: "http://192.168.1.131:1852"
+    enabled: true
+
+  - name: linkding
+    host: "linkding.{{ traefik_domain }}"
+    url: "http://192.168.1.131:9090"
     enabled: true
