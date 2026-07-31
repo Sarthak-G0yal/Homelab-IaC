@@ -86,3 +86,8 @@ traefik_http_services:
     host: "linkding.{{ traefik_domain }}"
     url: "http://192.168.1.131:9090"
     enabled: true
+
+  - name: gitea
+    host: "gitea.{{ traefik_domain }}"
+    url: "http://192.168.1.152:3000"
+    enabled: true

@@ -1,0 +1,26 @@
+---
+- name: Ensure /etc/bastionvault directory exists
+  ansible.builtin.file:
+    path: /etc/bastionvault
+    state: directory
+    mode: "0700"
+    owner: root
+    group: root
+
+- name: Configure BastionVault Client ID
+  ansible.builtin.copy:
+    content: "{{ bastionvault_client_id }}"
+    dest: /etc/bastionvault/client-id
+    mode: "0600"
+    owner: root
+    group: root
+  when: bastionvault_client_id is defined
+
+- name: Configure BastionVault Client Secret
+  ansible.builtin.copy:
+    content: "{{ bastionvault_client_secret }}"
+    dest: /etc/bastionvault/client-secret
+    mode: "0600"
+    owner: root
+    group: root
+  when: bastionvault_client_secret is defined

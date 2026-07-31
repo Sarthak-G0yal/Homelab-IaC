@@ -1,7 +1,7 @@
 ---
 - name: Configure Server Docker
   hosts: server-docker
-  become: yes
+  become: true
   pre_tasks:
     - name: Fix locale
       ansible.builtin.import_tasks: ../tasks/fix-locale.yml
@@ -12,4 +12,5 @@
     - name: Enable unattended upgrades
       ansible.builtin.import_tasks: ../tasks/enable-unattended-upgrades.yml
   roles:
-    - server-docker
+    - install-docker
+    - sync_docker_file_repo

@@ -1,0 +1,38 @@
+---
+- name: Ensure /root/.ssh directory exists
+  ansible.builtin.file:
+    path: /root/.ssh
+    state: directory
+    mode: "0700"
+    owner: root
+    group: root
+
+- name: Deploy GitHub SSH key
+  ansible.builtin.copy:
+    src: ~/.ssh/id_ed25519_homelab
+    dest: /root/.ssh/id_ed25519_github
+    mode: "0600"
+    owner: root
+    group: root
+
+- name: Configure SSH for GitHub
+  ansible.builtin.blockinfile:
+    path: /root/.ssh/config
+    create: true
+    mode: "0600"
+    owner: root
+    group: root
+    block: |
+      Host github.com
+        HostName github.com
+        User git
+        IdentityFile /root/.ssh/id_ed25519_github
+        IdentitiesOnly true
+
+- name: Clone docker-files repository
+  ansible.builtin.git:
+    repo: git@github.com:homelab118/docker-files.git
+    dest: /home/server/docker/
+    accept_hostkey: true
+    key_file: /root/.ssh/id_ed25519_github
+    update: true

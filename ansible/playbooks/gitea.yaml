@@ -1,6 +1,6 @@
 ---
-- name: Configure BastionVault host
-  hosts: bastion_vault
+- name: Configure Gitea host
+  hosts: gitea
   become: true
   pre_tasks:
     - name: Fix locale
@@ -12,5 +12,4 @@
     - name: Enable unattended upgrades
       ansible.builtin.import_tasks: ../tasks/enable-unattended-upgrades.yml
   roles:
-    - install-docker
-    - bastionvault
+    - role: install-docker
