@@ -82,7 +82,7 @@ Testing / Temporary
 | VMID | Service | Hostname | IP Address |
 |------|----------|----------|------------|
 | 401 | ansible-runner | ansible.homelab118.home | 192.168.1.151 |
-| 402 | gitops | gitops.homelab118.home | 192.168.1.152 |
+| 402 | gitea | gitea.homelab118.home | 192.168.1.152 |
 
 ---
 
