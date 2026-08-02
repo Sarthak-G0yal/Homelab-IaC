@@ -9,6 +9,7 @@
 **/.terraform/*
 
 # .tfstate files
+*.tfstate
 *.tfstate.*
 
 # Crash log files
@@ -19,7 +20,7 @@ crash.*.log
 # password, private keys, and other secrets. These should not be part of version
 # control as they are data points which are potentially sensitive and subject
 # to change depending on the environment.
-*secrets.auto.tfvars
+*.tfvars
 *.tfvars.json
 
 # Ignore override files as they are usually used to override resources locally and so
@@ -38,29 +39,5 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
-.env
+
 # End of https://www.toptal.com/developers/gitignore/api/terraform,ansible
-
-
-
-
-**/*.env
-**/secrets/
-**/volumes/
-**/data/
-**/*.log
-**/tmp/
-**/*.swp
-*.swp
-*_data*
-appdata
-*-data
-*-wal
-gitea/gitea/
-*temp/
-quarantine/
-logs*
-Backups
-*.db
-db
-*asp*
