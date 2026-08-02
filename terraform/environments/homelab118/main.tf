@@ -9,7 +9,7 @@ module "dockerhost" {
 module "postgres" {
   source = "../../services/databases"
 
-  config   = var.database_config
+  config   = var.postgres_config
   network  = var.network
   defaults = var.platform
 

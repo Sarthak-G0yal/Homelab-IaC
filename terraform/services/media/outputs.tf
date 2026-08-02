@@ -12,3 +12,8 @@ output "streaming_ipv4" {
   value       = module.streaming.ipv4_address
   description = "Streaming server IPv4 address"
 }
+
+output "ip" {
+  value       = module.streaming.ipv4_address
+  description = "Primary IPv4 address for streaming"
+}

@@ -22,3 +22,8 @@ output "dns_ipv6_map" {
   value       = module.dns.ipv6_addresses
   description = "All IPv6 addresses by interface"
 }
+
+output "ip" {
+  value       = module.dns.ipv4_address
+  description = "Primary IPv4 address for dns"
+}

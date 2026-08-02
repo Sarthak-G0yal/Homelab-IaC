@@ -22,3 +22,8 @@ output "database_ipv6_map" {
   value       = module.database.ipv6_addresses
   description = "All IPv6 addresses by interface"
 }
+
+output "ip" {
+  value       = module.database.ipv4_address
+  description = "Primary IPv4 address for database"
+}

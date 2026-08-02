@@ -12,3 +12,8 @@ output "server_docker_ipv4" {
   value       = module.server_docker.ipv4_address
   description = "server-docker IPv4 address"
 }
+
+output "ip" {
+  value       = module.server_docker.ipv4_address
+  description = "Primary IPv4 address for server-docker"
+}

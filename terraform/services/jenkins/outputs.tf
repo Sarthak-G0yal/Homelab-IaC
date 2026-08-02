@@ -12,3 +12,8 @@ output "jenkins_ipv4" {
   value       = module.jenkins.ipv4_address
   description = "Jenkins IPv4 address"
 }
+
+output "ip" {
+  value       = module.jenkins.ipv4_address
+  description = "Primary IPv4 address for jenkins"
+}

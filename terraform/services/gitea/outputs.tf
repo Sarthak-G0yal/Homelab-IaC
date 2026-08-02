@@ -12,3 +12,8 @@ output "gitea_ipv4" {
   value       = module.gitea.ipv4_address
   description = "Gitea IPv4 address"
 }
+
+output "ip" {
+  value       = module.gitea.ipv4_address
+  description = "Primary IPv4 address for gitea"
+}

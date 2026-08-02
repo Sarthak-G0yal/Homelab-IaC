@@ -66,6 +66,10 @@ variable "gitea_config" {
   type = any
 }
 
+variable "reverse_proxy_config" {
+  type = any
+}
+
 variable "postgres_config" {
   type = any
 }

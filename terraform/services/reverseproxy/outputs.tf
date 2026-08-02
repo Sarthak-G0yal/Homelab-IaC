@@ -13,6 +13,11 @@ output "reverse_proxy_ipv4" {
   description = "Reverse proxy IPv4 address"
 }
 
+output "ip" {
+  value       = module.reverse_proxy.ipv4_address
+  description = "Primary IPv4 address for reverse proxy"
+}
+
 output "reverse_proxy_ipv4_map" {
   value       = module.reverse_proxy.ipv4_addresses
   description = "All IPv4 addresses by interface"
