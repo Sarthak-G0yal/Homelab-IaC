@@ -1,14 +1,11 @@
-output "bastion_vault_vm_id" {
-  value       = module.bastion_vault.vm_id
-  description = "BastionVault container ID"
+output "vm_id" {
+  value = module.bastion_vault.vm_id
 }
 
-output "bastion_vault_hostname" {
-  value       = module.bastion_vault.hostname
-  description = "BastionVault hostname"
+output "hostname" {
+  value = module.bastion_vault.hostname
 }
 
-output "bastion_vault_ipv4" {
-  value       = module.bastion_vault.ipv4_address
-  description = "BastionVault IPv4 address"
+output "ip" {
+  value = module.bastion_vault.ipv4_address
 }

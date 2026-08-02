@@ -3,7 +3,7 @@ data "local_file" "ssh_key" {
 }
 
 module "dns" {
-  source = "../../../../modules/lxc"
+  source = "../../modules/lxc"
 
   node_name             = var.lxc_node_name
   vm_id                 = var.lxc_vm_id

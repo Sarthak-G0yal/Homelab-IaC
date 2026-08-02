@@ -3,7 +3,7 @@ data "local_file" "ssh_key" {
 }
 
 module "gitea" {
-  source = "../../../../modules/lxc"
+  source = "../../modules/lxc"
 
   node_name             = var.gitea_config.node_name
   vm_id                 = var.gitea_config.vm_id

@@ -1,34 +1,42 @@
 data "local_file" "ssh_key" {
-  filename = pathexpand(var.ssh_public_key_path)
+  filename = pathexpand(var.platform.ssh_public_key_path)
 }
 
-module "server_docker" {
-  source = "../../../../modules/lxc"
+module "dockerhost" {
+  source = "../../modules/lxc"
 
-  node_name             = var.server_docker_config.node_name
-  vm_id                 = var.server_docker_config.vm_id
-  hostname              = "server-docker"
-  datastore_id          = var.lxc_datastore_id
-  template_datastore_id = var.lxc_template_datastore_id
-  bridge                = var.lxc_bridge
-  ipv4_address          = var.server_docker_config.ipv4_address
-  ipv4_gateway          = var.lxc_ipv4_gateway
-  ipv6_address          = var.lxc_ipv6_address
-  dns_servers           = var.lxc_dns_servers
-  ssh_public_keys       = [trimspace(data.local_file.ssh_key.content)]
-  root_password         = var.lxc_root_password
-  disk_size_gb          = var.server_docker_config.disk_size_gb
-  memory_mb             = var.server_docker_config.memory_mb
-  swap_mb               = 1024
-  cpu_cores             = var.server_docker_config.cpu_cores
-  unprivileged          = true
-  nesting               = true
-  keyctl                = false
-  start_on_boot         = var.lxc_start_on_boot
-  started               = var.lxc_started
-  template_file_id      = var.lxc_template_file_id
-  template_file_name    = var.lxc_template_file_name
-  template_url          = local.lxc_template_url
-  template_verify       = var.lxc_template_verify
-  tags                  = ["application", "docker"]
+  node_name = var.config.node_name
+  vm_id     = var.config.vm_id
+  hostname  = "server-docker"
+
+  datastore_id          = var.platform.datastore
+  template_datastore_id = var.platform.template_datastore
+
+  bridge       = var.network.bridge
+  ipv4_address = var.config.ipv4_address
+  ipv4_gateway = var.network.gateway
+  ipv6_address = var.network.ipv6_address
+  dns_servers  = var.network.dns_servers
+
+  ssh_public_keys = [trimspace(data.local_file.ssh_key.content)]
+  root_password   = var.platform.root_password
+
+  disk_size_gb = var.config.disk_size_gb
+  memory_mb    = var.config.memory_mb
+  swap_mb      = 512
+  cpu_cores    = var.config.cpu_cores
+
+  unprivileged = true
+  nesting      = true
+  keyctl       = false
+
+  start_on_boot = var.platform.start_on_boot
+  started       = var.platform.started
+
+  template_file_id   = var.platform.template_file
+  template_file_name = var.platform.template_filename
+  template_url       = local.lxc_template_url
+  template_verify    = var.platform.template_verify
+
+  tags = ["application", "docker"]
 }
