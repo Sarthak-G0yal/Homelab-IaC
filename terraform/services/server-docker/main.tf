@@ -2,7 +2,7 @@ data "local_file" "ssh_key" {
   filename = pathexpand(var.platform.ssh_public_key_path)
 }
 
-module "dockerhost" {
+module "server_docker" {
   source = "../../modules/lxc"
 
   node_name = var.config.node_name

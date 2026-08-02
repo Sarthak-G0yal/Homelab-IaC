@@ -1,15 +1,16 @@
-module "dockerhost" {
-  source = "../../services/dockerhost"
+module "server_docker" {
+  source   = "../../services/server-docker"
   config   = var.server_docker_config
   network  = var.network
-  defaults = var.platform
+  platform = var.platform
 }
+
 module "postgres" {
   source = "../../services/databases"
+
   config   = var.postgres_config
   network  = var.network
-  defaults = var.platform
-  docker_ip = module.dockerhost.ip
+  platform = var.platform
 }
 
 module "gitea" {
@@ -17,9 +18,7 @@ module "gitea" {
 
   config   = var.gitea_config
   network  = var.network
-  defaults = var.platform
-
-  postgres_ip = module.postgres.ip
+  platform = var.platform
 }
 
 module "traefik" {
@@ -27,7 +26,5 @@ module "traefik" {
 
   config   = var.reverse_proxy_config
   network  = var.network
-  defaults = var.platform
-
-  docker_ip = module.dockerhost.ip
+  platform = var.platform
 }

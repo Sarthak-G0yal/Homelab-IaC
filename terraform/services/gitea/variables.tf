@@ -3,17 +3,20 @@
 variable "proxmox_api_url" {
   type        = string
   description = "Proxmox API URL (e.g. https://proxmox:8006/api2/json)"
+  default     = null
 }
 
 variable "proxmox_token_id" {
   type        = string
   description = "Proxmox API token ID (user@realm!token)"
+  default     = null
 }
 
 variable "proxmox_token_secret" {
   type        = string
   description = "Proxmox API token secret"
   sensitive   = true
+  default     = null
 }
 
 variable "proxmox_tls_insecure" {
@@ -123,6 +126,7 @@ variable "gitea_config" {
     cpu_cores    = number
   })
   description = "Configuration settings for the Gitea LXC container"
+  default     = null
 }
 
 variable "config" {

@@ -17,6 +17,8 @@ variable "network" {
 
     gateway = string
 
+    ipv6_address = string
+
     dns_servers = list(string)
 
   })
@@ -43,6 +45,8 @@ variable "platform" {
 
     started = bool
 
+    unprivileged = bool
+
     root_password = string
 
     ssh_public_key_path = string
@@ -62,24 +66,49 @@ variable "server_docker_config" {
   })
 }
 
+variable "postgres_config" {
+  type = object({
+    node_name    = string
+    vm_id        = number
+    ipv4_address = string
+    disk_size_gb = number
+    memory_mb    = number
+    cpu_cores    = number
+  })
+}
+
 variable "gitea_config" {
-  type = any
+  type = object({
+    node_name    = string
+    vm_id        = number
+    ipv4_address = string
+    disk_size_gb = number
+    memory_mb    = number
+    cpu_cores    = number
+  })
 }
 
 variable "reverse_proxy_config" {
-  type = any
+  type = object({
+    node_name    = string
+    vm_id        = number
+    hostname     = string
+    ipv4_address = string
+    disk_size_gb = number
+    memory_mb    = number
+    swap_mb      = number
+    cpu_cores    = number
+    tags         = list(string)
+  })
 }
 
-variable "postgres_config" {
-  type = any
-}
-variable "jenkins_config" {
-  type = any
-}
-variable "plex_config" {
-  type = any
-}
+# variable "jenkins_config" {
+#   type = any
+# }
+# variable "plex_config" {
+#   type = any
+# }
 
-variable "bastion_vault_config" {
-  type = any
-}
+# variable "bastion_vault_config" {
+#   type = any
+# }
