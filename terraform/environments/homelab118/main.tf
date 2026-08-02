@@ -1,18 +1,14 @@
 module "dockerhost" {
   source = "../../services/dockerhost"
-
   config   = var.server_docker_config
   network  = var.network
   defaults = var.platform
 }
-
 module "postgres" {
   source = "../../services/databases"
-
   config   = var.postgres_config
   network  = var.network
   defaults = var.platform
-
   docker_ip = module.dockerhost.ip
 }
 
