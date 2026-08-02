@@ -1,11 +1,11 @@
-module "server_docker" {
+module "dockerhost" {
   source   = "../../services/server-docker"
   config   = var.server_docker_config
   network  = var.network
   platform = var.platform
 }
 
-module "postgres" {
+module "databases" {
   source = "../../services/databases"
 
   config   = var.postgres_config
@@ -21,10 +21,42 @@ module "gitea" {
   platform = var.platform
 }
 
-module "traefik" {
+module "reverseproxy" {
   source = "../../services/reverseproxy"
 
   config   = var.reverse_proxy_config
+  network  = var.network
+  platform = var.platform
+}
+
+module "dns" {
+  source = "../../services/dns"
+
+  config   = var.dns_config
+  network  = var.network
+  platform = var.platform
+}
+
+module "jenkins" {
+  source = "../../services/jenkins"
+
+  config   = var.jenkins_config
+  network  = var.network
+  platform = var.platform
+}
+
+module "media" {
+  source = "../../services/media"
+
+  config   = var.plex_config
+  network  = var.network
+  platform = var.platform
+}
+
+module "bastionvault" {
+  source = "../../services/bastionvault"
+
+  config   = var.bastion_vault_config
   network  = var.network
   platform = var.platform
 }

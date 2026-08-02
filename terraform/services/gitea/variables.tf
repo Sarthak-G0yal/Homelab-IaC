@@ -1,30 +1,3 @@
-# ── Proxmox provider ──────────────────────────────────────────────────────────
-
-variable "proxmox_api_url" {
-  type        = string
-  description = "Proxmox API URL (e.g. https://proxmox:8006/api2/json)"
-  default     = null
-}
-
-variable "proxmox_token_id" {
-  type        = string
-  description = "Proxmox API token ID (user@realm!token)"
-  default     = null
-}
-
-variable "proxmox_token_secret" {
-  type        = string
-  description = "Proxmox API token secret"
-  sensitive   = true
-  default     = null
-}
-
-variable "proxmox_tls_insecure" {
-  type        = bool
-  description = "Skip TLS verification for the Proxmox API"
-  default     = true
-}
-
 # ── SSH ───────────────────────────────────────────────────────────────────────
 
 variable "ssh_public_key_path" {
@@ -112,21 +85,6 @@ variable "lxc_template_verify" {
   type        = bool
   description = "Verify TLS certificates for the template download"
   default     = false
-}
-
-# ── Gitea-specific ─────────────────────────────────────────────────────────────
-
-variable "gitea_config" {
-  type = object({
-    node_name    = string
-    vm_id        = number
-    ipv4_address = string
-    disk_size_gb = number
-    memory_mb    = number
-    cpu_cores    = number
-  })
-  description = "Configuration settings for the Gitea LXC container"
-  default     = null
 }
 
 variable "config" {

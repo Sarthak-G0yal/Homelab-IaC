@@ -1,25 +1,3 @@
-variable "proxmox_api_url" {
-  type        = string
-  description = "Proxmox API URL (e.g. https://proxmox:8006/api2/json)"
-}
-
-variable "proxmox_token_id" {
-  type        = string
-  description = "Proxmox API token ID (user@realm!token)"
-}
-
-variable "proxmox_token_secret" {
-  type        = string
-  description = "Proxmox API token secret"
-  sensitive   = true
-}
-
-variable "proxmox_tls_insecure" {
-  type        = bool
-  description = "Skip TLS verification for the Proxmox API"
-  default     = true
-}
-
 variable "ssh_public_key_path" {
   type        = string
   description = "Path to SSH public key on the infra host"

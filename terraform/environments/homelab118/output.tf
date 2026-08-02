@@ -1,9 +1,9 @@
 output "docker_ip" {
-  value = module.server_docker.ip
+  value = module.dockerhost.ip
 }
 
 output "postgres_ip" {
-  value = module.postgres.ip
+  value = module.databases.ip
 }
 
 output "gitea_ip" {
@@ -11,5 +11,21 @@ output "gitea_ip" {
 }
 
 output "traefik_ip" {
-  value = module.traefik.ip
+  value = module.reverseproxy.ip
+}
+
+output "dns_ip" {
+  value = module.dns.ip
+}
+
+output "jenkins_ip" {
+  value = module.jenkins.ip
+}
+
+output "media_ip" {
+  value = module.media.ip
+}
+
+output "bastion_vault_ip" {
+  value = module.bastionvault.ip
 }

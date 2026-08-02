@@ -102,13 +102,50 @@ variable "reverse_proxy_config" {
   })
 }
 
-# variable "jenkins_config" {
-#   type = any
-# }
-# variable "plex_config" {
-#   type = any
-# }
+variable "dns_config" {
+  type = object({
+    node_name    = string
+    vm_id        = number
+    hostname     = string
+    ipv4_address = string
+    disk_size_gb = number
+    memory_mb    = number
+    swap_mb      = number
+    cpu_cores    = number
+    tags         = list(string)
+  })
+}
 
-# variable "bastion_vault_config" {
-#   type = any
-# }
+variable "jenkins_config" {
+  type = object({
+    node_name    = string
+    vm_id        = number
+    ipv4_address = string
+    disk_size_gb = number
+    memory_mb    = number
+    cpu_cores    = number
+  })
+}
+
+variable "plex_config" {
+  type = object({
+    node_name    = string
+    vm_id        = number
+    ipv4_address = string
+    disk_size_gb = number
+    memory_mb    = number
+    cpu_cores    = number
+  })
+}
+
+variable "bastion_vault_config" {
+  type = object({
+    node_name    = string
+    vm_id        = number
+    ipv4_address = string
+    disk_size_gb = number
+    memory_mb    = number
+    cpu_cores    = number
+  })
+}
+
