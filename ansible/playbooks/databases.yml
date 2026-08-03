@@ -12,6 +12,6 @@
     - name: Enable unattended upgrades
       ansible.builtin.import_tasks: ../tasks/enable-unattended-upgrades.yml
   roles:
-    - database
+    - postgres
     - mongodb
     - backup
