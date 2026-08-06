@@ -30,6 +30,6 @@ output "bastion_vault_ip" {
   value = module.bastionvault.ip
 }
 
-output "k8s_host_ip" {
-  value = module.k8s-host.ip
+output "k8s_master_ip" {
+  value = module.k8s-master.ip
 }
