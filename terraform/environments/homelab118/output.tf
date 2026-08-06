@@ -29,3 +29,7 @@ output "media_ip" {
 output "bastion_vault_ip" {
   value = module.bastionvault.ip
 }
+
+output "k8s_host_ip" {
+  value = module.k8s-host.ip
+}

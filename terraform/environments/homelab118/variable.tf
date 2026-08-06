@@ -149,3 +149,14 @@ variable "bastion_vault_config" {
   })
 }
 
+variable "k8s_host_config" {
+  type = object({
+    node_name    = string
+    vm_id        = number
+    ipv4_address = string
+    disk_size_gb = number
+    memory_mb    = number
+    cpu_cores    = number
+  })
+}
+
