@@ -1,0 +1,6 @@
+---
+k3s_version: "latest"
+k3s_install_url: "https://get.k3s.io"
+k3s_install_extra_args: ""
+k3s_ready_retries: 20
+k3s_ready_delay: 3
