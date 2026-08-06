@@ -7,7 +7,7 @@ module "container" {
 
   node_name = var.config.node_name
   vm_id     = var.config.vm_id
-  hostname  = "k8s-host"
+  hostname  = "k8s-master"
 
   datastore_id          = var.platform.datastore
   template_datastore_id = var.platform.template_datastore

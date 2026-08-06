@@ -61,10 +61,10 @@ module "bastionvault" {
   platform = var.platform
 }
 
-module "k8s-host" {
-  source = "../../services/k8s-host"
+module "k8s-master" {
+  source = "../../services/k8s-master"
 
-  config   = var.k8s_host_config
+  config   = var.k8s_master_config
   network  = var.network
   platform = var.platform
 }

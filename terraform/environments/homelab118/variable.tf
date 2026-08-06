@@ -149,7 +149,7 @@ variable "bastion_vault_config" {
   })
 }
 
-variable "k8s_host_config" {
+variable "k8s_master_config" {
   type = object({
     node_name    = string
     vm_id        = number
