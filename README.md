@@ -58,7 +58,8 @@ infra/
 │       ├── jenkins/
 │       ├── media/
 │       ├── reverseproxy/
-│       └── server-docker/
+│       ├── server-docker/
+│       :     
 │
 ├── ansible/
 │   ├── inventory/
