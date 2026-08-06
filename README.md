@@ -26,7 +26,7 @@ This repository is responsible for provisioning and managing the homelab infrast
 
 * BastionVault
 * Docker Host
-* Kubernetes Host
+* Kubernetes Master Host
 
 ### Databases
 
