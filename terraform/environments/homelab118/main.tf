@@ -61,10 +61,18 @@ module "bastionvault" {
   platform = var.platform
 }
 
-module "k8s-master" {
-  source = "../../services/k8s-master"
+module "k3s-control" {
+  source = "../../services/k3s-control"
 
-  config   = var.k8s_master_config
+  config   = var.k3s_control_config
+  network  = var.network
+  platform = var.platform
+}
+
+module "k3s-worker-1" {
+  source = "../../services/k3s-worker-1"
+
+  config   = var.k3s_worker_1_config
   network  = var.network
   platform = var.platform
 }

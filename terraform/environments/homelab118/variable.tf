@@ -149,7 +149,7 @@ variable "bastion_vault_config" {
   })
 }
 
-variable "k8s_master_config" {
+variable "k3s_control_config" {
   type = object({
     node_name    = string
     vm_id        = number
@@ -160,3 +160,14 @@ variable "k8s_master_config" {
   })
 }
 
+
+variable "k3s_worker_1_config" {
+  type = object({
+    node_name    = string
+    vm_id        = number
+    ipv4_address = string
+    disk_size_gb = number
+    memory_mb    = number
+    cpu_cores    = number
+  })
+}

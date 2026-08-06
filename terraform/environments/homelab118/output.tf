@@ -30,6 +30,10 @@ output "bastion_vault_ip" {
   value = module.bastionvault.ip
 }
 
-output "k8s_master_ip" {
-  value = module.k8s-master.ip
+output "k3s_control_ip" {
+  value = module.k3s-control.ip
+}
+
+output "k3s_worker_1_ip" {
+  value = module.k3s-worker-1.ip
 }
