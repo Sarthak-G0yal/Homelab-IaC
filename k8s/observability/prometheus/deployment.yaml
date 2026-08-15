@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: prometheus
+
+  template:
+    metadata:
+      labels:
+        app: prometheus
+
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:latest
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 9090
+
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus/prometheus.yml
+              subPath: prometheus.yml
+
+            - name: secrets
+              mountPath: /etc/prometheus/secrets
+              readOnly: true
+
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-config
+
+        - name: secrets
+          secret:
+            secretName: prometheus-secrets
