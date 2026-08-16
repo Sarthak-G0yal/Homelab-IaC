@@ -1,135 +1,88 @@
 # Homelab Infrastructure as Code
 
-This repository contains the Infrastructure as Code (IaC) for my personal homelab. It uses Terraform to provision infrastructure on Proxmox VE and Ansible to configure and manage the operating systems and services running within the environment.
+This repository manages the complete lifecycle of my homelab — from bare-metal VM/LXC provisioning with Terraform to service configuration with Ansible, K3s Kubernetes cluster setup, and declarative Kubernetes workload management.
 
-The objective of this project is to build and maintain a production-inspired homelab using modern infrastructure engineering practices. Every component is managed as code to ensure the environment is reproducible, version controlled, and easy to maintain.
+## Stack
 
-## Overview
+| Layer | Tool | Purpose |
+|---|---|---|
+| Provisioning | Terraform (`bpg/proxmox`) | Creates LXC containers and Cloud-Init VMs on Proxmox VE |
+| Configuration | Ansible | Installs and configures services on provisioned hosts |
+| Kubernetes Infra | Ansible (`install-k3s`) | Deploys a K3s cluster on dedicated VMs |
+| Kubernetes Workloads | kubectl manifests | Deploys apps and observability stack into the cluster |
 
-This repository is responsible for provisioning and managing the homelab infrastructure, including:
+## Current Services
 
-* Provisioning LXC containers on Proxmox
-* Managing networking and core infrastructure services
-* Configuring operating systems with Ansible
-* Deploying and maintaining self-hosted applications
-* Providing reusable Terraform modules
-* Maintaining a scalable repository structure for future services
+| Service | Type | Category |
+|---|---|---|
+| Technitium DNS | LXC | Networking |
+| Traefik Reverse Proxy | LXC | Networking |
+| PostgreSQL | LXC | Database |
+| Plex / Jellyfin | LXC | Media |
+| Jenkins CI/CD | LXC | Application |
+| Server Docker | LXC | Application |
+| Gitea | LXC | Infrastructure |
+| BastionVault | LXC | Infrastructure |
+| k3s-control | VM | Kubernetes |
+| k3s-worker-1 | VM | Kubernetes |
 
-## Current Infrastructure
+## Kubernetes Cluster
 
-### Networking
+The K3s cluster runs on Ubuntu 24.04 Cloud-Init VMs provisioned via Terraform. Ansible provisions the cluster using the `install-k3s` role and `playbooks/k3s.yaml`. Workloads are declared in `k8s/`.
 
-* Technitium DNS Server
-* Traefik Reverse Proxy
+**Cluster nodes:**
+- `k3s-control` — Control plane (192.168.1.170)
+- `k3s-worker-1` — Worker node (192.168.1.171)
 
-### Infrastructure
+**Applications running in cluster:**
+- ASAP (frontend + backend)
+- Uptime Kuma
+- Prometheus, Grafana, Loki (observability stack)
 
-* BastionVault
-* Docker Host
-* Kubernetes Master Host
+## Quick Start
 
-### Databases
-
-* PostgreSQL
-* MongoDB
-
-### Applications
-
-* Gitea
-* Jenkins
-* Plex Media Server
-
-Additional services will be incorporated as the homelab evolves.
-
-## Repository Structure
-
-```text
-infra/
-├── terraform/
-│   ├── environments/
-│   │   └── homelab118/
-│   ├── modules/
-│   │   └── lxc/
-│   └── services/
-│       ├── bastionvault/
-│       ├── databases/
-│       ├── dns/
-│       ├── gitea/
-│       ├── jenkins/
-│       ├── media/
-│       ├── reverseproxy/
-│       ├── server-docker/
-│       :     
-│
-├── ansible/
-│   ├── inventory/
-│   ├── playbooks/
-│   └── roles/
-│
-├── configs/
-├── docs/
-└── README.md
+### 1. Provision Infrastructure
+```bash
+cd terraform/environments/homelab118
+terraform init
+terraform apply
 ```
 
-## Design Principles
+### 2. Configure Services
+```bash
+cd ansible
+ansible-playbook -i inventory/hosts.ini playbooks/k3s.yaml       # K3s cluster
+ansible-playbook -i inventory/hosts.ini playbooks/databases.yml   # Databases
+```
 
-The repository is organized around the following principles:
+### 3. Deploy Kubernetes Workloads
+```bash
+kubectl apply -f k8s/namespace/
+kubectl apply -f k8s/apps/
+kubectl apply -f k8s/observability/
+```
 
-* Infrastructure should be reproducible.
-* Configuration should be version controlled.
-* Services should remain isolated from one another.
-* Infrastructure provisioning and configuration management should be clearly separated.
-* New services should be added with minimal impact on existing deployments.
-* The repository should scale as the homelab grows.
+## SSH Key Setup
 
-## Terraform Architecture
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_proxmox -C "homelab"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519_proxmox
+```
 
-Terraform is used to provision the infrastructure.
+Add to `~/.ssh/config`:
+```sshconfig
+Host 192.168.1.*
+   User root
+   IdentityFile ~/.ssh/id_ed25519_proxmox
+   ForwardAgent yes
+```
 
-The repository consists of:
+## Notes
 
-* A single environment (`homelab118`)
-* Reusable infrastructure modules
-* A dedicated service directory for each workload
-* A root environment that manages dependencies between services
-
-This structure allows the entire environment to be provisioned with a single `terraform apply` while also supporting the deployment of individual services when required.
-
-## Configuration Management
-
-Ansible is used after infrastructure provisioning to configure each system by:
-
-* Installing required packages
-* Configuring operating systems
-* Managing Docker hosts
-* Deploying application-specific configuration
-* Applying system updates
-* Executing reusable roles across multiple services
-
-## Secrets Management
-
-Infrastructure secrets are currently supplied through `secrets.auto.tfvars`, while Ansible uses encrypted group variables.
-
-The planned approach is to migrate infrastructure and application secrets to BastionVault, allowing Terraform, Ansible, Docker, and future CI/CD pipelines to retrieve credentials from a centralized secrets management platform.
-
-## Roadmap
-
-Planned improvements include:
-
-* Remote Terraform state backend
-* State locking
-* BastionVault integration
-* CI/CD automation
-* Kubernetes cluster provisioning
-* Automated backups
-* Monitoring and observability
-* Multi-environment support
-* GitOps-based deployments
-
-## Purpose
-
-This repository serves as the source of truth for my personal homelab.
-
-It is also an ongoing infrastructure engineering project where I explore technologies such as Terraform, Ansible, Proxmox, Docker, Kubernetes, observability, secrets management, and automation while applying practices commonly used in production environments.
-
-As the homelab evolves, this repository evolves with it, documenting the infrastructure, automation, and operational decisions that support the environment.
+- `secrets.auto.tfvars` is gitignored — copy from `.example` template.
+- Ansible secrets stored in `inventory/group_vars/all/` — encrypt with `ansible-vault`.
+- Docker-in-LXC (Jenkins, Server Docker) requires `keyctl` to be enabled on the Proxmox host:
+  ```bash
+  pct set <vmid> -features keyctl=1
+  ```

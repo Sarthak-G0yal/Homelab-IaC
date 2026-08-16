@@ -1,42 +1,45 @@
-# Ansible Homelab Infrastructure
+# Ansible — Homelab Configuration Management
 
-This repository contains the Ansible playbooks and roles for managing the homelab infrastructure.
+Configures all homelab services after Terraform provisioning. Playbooks are organized per service; roles are reusable.
 
-## Structure
+## Playbooks
 
-- `inventory/hosts.ini`: Contains the list of hosts and their respective groups.
-- `playbooks/`: Contains the main playbooks to apply configurations to specific groups of hosts.
-- `roles/`: Modular configurations for different applications and services.
-- `group_vars/`: Global and group-specific variables.
+| Playbook | Purpose |
+|---|---|
+| `k3s.yaml` | Deploy K3s control plane and worker nodes |
+| `k8s-master.yaml` | Post-K3s master node configuration |
+| `databases.yml` | Install PostgreSQL & MongoDB & rclone backup config|
+| `reverse-proxy.yml` | Install and configure Traefik |
+| `dns.yml` | Install Technitium DNS |
+| `gitea.yaml` | Install Gitea |
+| `server-docker.yml` | Install Docker CE |
+| `streaming.yml` | Install Plex / Jellyfin |
+| `bastion-vault.yml` | Install BastionVault |
 
-## Important Roles
+## Key Roles
 
-### 1. Database (`roles/database`)
-Installs and configures PostgreSQL (and potentially other databases like MongoDB).
-*Note: This role was formerly named `postgres` but was renamed to represent the broader database server.*
+- **`install-k3s`** — Installs K3s server and agent. Configures UFW firewall ports (`6443`, `8472`, `10250`, pod/service CIDRs), provisions the server, extracts node-token, registers workers, and labels them with `node-role.kubernetes.io/worker=worker`.
+- **`install-docker`** — Installs Docker CE.
+- **`postgres`** — Installs and initializes PostgreSQL.
+- **`traefik`** — Deploys Traefik as a reverse proxy with TLS.
+- **`technitium`** — Installs Technitium DNS server.
+- **`backup`** — Automated database + config backups synced via rclone.
+- **`bastionvault`** — HashiCorp Vault deployment.
 
-### 2. Backup (`roles/backup`)
-Configures an automated daily backup system for both the PostgreSQL databases and the Docker Compose configurations.
+## Inventory
 
-**Features:**
-- Dumps PostgreSQL databases using `pg_dump` and `pg_dumpall`.
-- Clones the private `docker-files` repository using SSH keys to backup the latest configurations.
-- Syncs the backups to Google Drive using `rclone`.
-- Enforces local retention (1 day) and remote retention (7 days).
+Hosts are defined in `inventory/hosts.ini`. Relevant groups:
+- `[k3s_server]` — K3s control plane node
+- `[k3s_agents]` — K3s worker nodes
 
-## Variables and Secrets
+Global variables live in `inventory/group_vars/all/main.yml`.
 
-Sensitive variables, credentials, and all Infrastructure IPs (e.g., `ip_database`, `secret_postgres_admin_password`, `secret_rclone_gdrive_token`) are stored centrally in `inventory/group_vars/all/secrets.yml`. This acts as the single source of truth for dynamic role configurations.
-You can use `ansible-vault` to encrypt this file:
+## Running
+
 ```bash
-ansible-vault encrypt inventory/group_vars/all/secrets.yml
-```
+# Deploy K3s cluster
+ansible-playbook -i inventory/hosts.ini playbooks/k3s.yaml
 
-When running playbooks, use the `--ask-vault-pass` flag to decrypt the secrets.
-
-## Running Playbooks
-
-Example: To configure the database server and install the backup scripts:
-```bash
-ansible-playbook -i inventory/hosts.ini playbooks/databases.yml --ask-vault-pass
+# Deploy a specific service
+ansible-playbook -i inventory/hosts.ini playbooks/databases.yml
 ```
