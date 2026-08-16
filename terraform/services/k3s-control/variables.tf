@@ -53,6 +53,8 @@ variable "platform" {
 
     started = bool
 
+    iso_file_id = optional(string)
+
   })
 
 }

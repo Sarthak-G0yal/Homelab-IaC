@@ -51,6 +51,10 @@ variable "platform" {
 
     ssh_public_key_path = string
 
+    ssh_private_key_path = optional(string, "/home/sg/.ssh/id_ed25519_proxmox")
+
+    iso_file_id = optional(string, "local:iso/ubuntu-24.04-minimal-cloudimg-amd64.img")
+
   })
 
 }

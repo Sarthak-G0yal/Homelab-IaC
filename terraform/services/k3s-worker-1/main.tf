@@ -2,8 +2,8 @@ data "local_file" "ssh_key" {
   filename = pathexpand(var.platform.ssh_public_key_path)
 }
 
-module "container" {
-  source = "../../modules/lxc"
+module "vm" {
+  source = "../../modules/vm"
 
   node_name = var.config.node_name
   vm_id     = var.config.vm_id
@@ -11,6 +11,7 @@ module "container" {
 
   datastore_id          = var.platform.datastore
   template_datastore_id = var.platform.template_datastore
+  iso_file_id           = try(var.platform.iso_file_id, "local:iso/ubuntu-24.04-minimal-cloudimg-amd64.img")
 
   bridge       = var.network.bridge
   ipv4_address = var.config.ipv4_address
@@ -23,20 +24,10 @@ module "container" {
 
   disk_size_gb = var.config.disk_size_gb
   memory_mb    = var.config.memory_mb
-  swap_mb      = 512
   cpu_cores    = var.config.cpu_cores
-
-  unprivileged = true
-  nesting      = true
-  keyctl       = false
 
   start_on_boot = var.platform.start_on_boot
   started       = var.platform.started
-
-  template_file_id   = var.platform.template_file
-  template_file_name = var.platform.template_filename
-  template_url       = local.lxc_template_url
-  template_verify    = var.platform.template_verify
 
   tags = [
     "infrastructure",
