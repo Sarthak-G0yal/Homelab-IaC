@@ -3,23 +3,108 @@
   ansible.builtin.apt:
     name:
       - curl
+      - ca-certificates
+      - iptables
+      - ufw
     state: present
     update_cache: true
 
-- name: Install k3s server
+- name: Check if UFW is installed
+  ansible.builtin.command: which ufw
+  register: ufw_check
+  failed_when: false
+  changed_when: false
+
+- name: Configure UFW firewall rules for K3s
+  ansible.builtin.command: "ufw {{ item }}"
+  loop:
+    - "allow 6443/tcp"
+    - "allow 8472/udp"
+    - "allow 10250/tcp"
+    - "allow from 10.42.0.0/16"
+    - "allow from 10.43.0.0/16"
+    - "allow from 192.168.1.0/24"
+  when: ufw_check.rc == 0
+  changed_when: false
+
+- name: Ensure UFW DEFAULT_FORWARD_POLICY is ACCEPT for container routing
+  ansible.builtin.lineinfile:
+    path: /etc/default/ufw
+    regexp: '^DEFAULT_FORWARD_POLICY='
+    line: 'DEFAULT_FORWARD_POLICY="ACCEPT"'
+  when: ufw_check.rc == 0
+
+#############################################################
+# SERVER
+#############################################################
+
+- name: Install K3s server
   ansible.builtin.shell: |
-    curl -sfL {{ k3s_install_url }} | sh -s - {{ k3s_install_extra_args }}
+    curl -sfL https://get.k3s.io | \
+      INSTALL_K3S_SKIP_START=true \
+      INSTALL_K3S_EXEC="server --bind-address={{ k3s_server_ip }} --node-ip={{ k3s_server_ip }} --tls-san={{ k3s_server_ip }}" \
+      sh -
   args:
     executable: /bin/bash
-    creates: /usr/local/bin/k3s
-  environment:
-    INSTALL_K3S_VERSION: "{{ k3s_version }}"
-  become: true
+    creates: /etc/systemd/system/k3s.service
+  when: inventory_hostname in groups['k3s_server']
 
-- name: Wait for k3s node to become ready
-  ansible.builtin.command: /usr/local/bin/k3s kubectl get node
-  register: k3s_nodes
-  retries: "{{ k3s_ready_retries }}"
-  delay: "{{ k3s_ready_delay }}"
-  until: k3s_nodes.rc == 0
-  become: true
+- name: Ensure K3s server service is started and enabled
+  ansible.builtin.systemd:
+    name: k3s
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: inventory_hostname in groups['k3s_server']
+
+- name: Wait for K3s API server port 6443
+  ansible.builtin.wait_for:
+    host: "{{ k3s_server_ip }}"
+    port: 6443
+    delay: 2
+    timeout: 120
+  when: inventory_hostname in groups['k3s_server']
+
+- name: Wait for node token file
+  ansible.builtin.wait_for:
+    path: /var/lib/rancher/k3s/server/node-token
+    state: present
+    delay: 2
+    timeout: 120
+  when: inventory_hostname in groups['k3s_server']
+
+- name: Read node token
+  ansible.builtin.slurp:
+    src: /var/lib/rancher/k3s/server/node-token
+  register: node_token
+  when: inventory_hostname in groups['k3s_server']
+
+- name: Save token as fact
+  ansible.builtin.set_fact:
+    k3s_token: "{{ node_token.content | b64decode | trim }}"
+  when: inventory_hostname in groups['k3s_server']
+
+#############################################################
+# AGENTS
+#############################################################
+
+- name: Install K3s agent
+  ansible.builtin.shell: |
+    curl -sfL https://get.k3s.io | \
+      K3S_URL=https://{{ k3s_server_ip }}:6443 \
+      K3S_TOKEN={{ hostvars[groups['k3s_server'][0]].k3s_token }} \
+      INSTALL_K3S_SKIP_START=true \
+      INSTALL_K3S_EXEC="agent --node-ip={{ ansible_host }} --node-label node-role.kubernetes.io/worker=worker" \
+      sh -
+  args:
+    executable: /bin/bash
+    creates: /etc/systemd/system/k3s-agent.service
+  when: inventory_hostname in groups['k3s_agents']
+
+- name: Ensure K3s agent service is started and enabled
+  ansible.builtin.systemd:
+    name: k3s-agent
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: inventory_hostname in groups['k3s_agents']
