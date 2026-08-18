@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: firefly3
+  labels:
+    app: firefly3
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: firefly3
+
+  template:
+    metadata:
+      labels:
+        app: firefly3
+
+    spec:
+      containers:
+        - name: firefly3
+          image: fireflyiii/core:latest
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 8080
+
+          envFrom:
+            - configMapRef:
+                name: firefly3-config
+            - secretRef:
+                name: firefly3-secret
+
+          volumeMounts:
+            - name: firefly3-upload
+              mountPath: /var/www/html/storage/upload
+
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+
+      volumes:
+        - name: firefly3-upload
+          persistentVolumeClaim:
+            claimName: firefly3-upload
