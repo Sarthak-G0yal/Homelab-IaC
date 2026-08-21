@@ -69,8 +69,7 @@ traefik_http_services:
 
   - name: uptime
     host: "uptime.{{ traefik_domain }}"
-    url: "http://192.168.1.131:3001"
-    enabled: false
+    url: "http://192.168.1.170:30002"
 
   - name: bastionvault
     host: "bastionvault.{{ traefik_domain }}"
