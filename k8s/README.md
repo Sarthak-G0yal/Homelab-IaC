@@ -9,19 +9,6 @@ The cluster is provisioned by Terraform + Ansible (see `../terraform` and `../an
 Runs on K3s v1.36+ on Ubuntu 24.04 VMs:
 - `k3s-control` — Control plane (192.168.1.170)
 - `k3s-worker-1` — Worker node (192.168.1.171)
-```text
-                         Kubernetes Cluster
-                                │
-             ┌──────────────────┴──────────────────┐
-             │                                     │
-        Applications                         Observability
-             │                                     │
-      ┌──────┴──────┐                    ┌─────────┴─────────┐
-      │             │                    │         │         │
-     ASAP      Uptime Kuma           Prometheus  Grafana   Loki
-      │             │                    │         │         │
-      └─────────────┴────────────────────┴─────────┴─────────┘
-````
 
 ## Port Mapping
 
