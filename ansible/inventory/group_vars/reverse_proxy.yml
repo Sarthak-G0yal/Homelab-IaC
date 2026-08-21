@@ -53,7 +53,7 @@ traefik_http_services:
 
   - name: asap
     host: "asap.{{ traefik_domain }}"
-    url: "http://192.168.1.131:5173"
+    url: "http://192.168.1.170:30001"
 
   - name: vert
     host: "vert.{{ traefik_domain }}"
@@ -61,7 +61,7 @@ traefik_http_services:
 
   - name: firefly
     host: "money.{{ traefik_domain }}"
-    url: "http://192.168.1.131:8080"
+    url: "http://192.168.1.170:30000"
 
   - name: memos
     host: "memos.{{ traefik_domain }}"
