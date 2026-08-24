@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-config
+  namespace: observability
 data:
   prometheus.yml: |
     global:
@@ -13,7 +14,7 @@ data:
 
         static_configs:
           - targets:
-              - "uptime-kuma:3001"
+              - "uptime-kuma.default.svc.cluster.local:3001"
 
         basic_auth:
           username: ""

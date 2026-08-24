@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
+  namespace: observability
   labels:
     app: grafana
 spec:
@@ -18,14 +19,6 @@ spec:
         - name: grafana
           image: grafana/grafana:latest
           imagePullPolicy: Always
-
-          resources:
-            requests:
-              memory: "250Mi"
-              cpu: "250m"
-            limits:
-              memory: "250Mi"
-              cpu: "500m"
           ports:
             - containerPort: 3000
 

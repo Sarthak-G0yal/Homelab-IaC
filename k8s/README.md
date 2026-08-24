@@ -17,6 +17,7 @@ Runs on K3s v1.36+ on Ubuntu 24.04 VMs:
 | Firefly     | NodePort   | 8080    | 8080    | 30000    |
 | ASAP Client     | NodePort   | 80    | 80    | 30001    |
 | Uptime Kuma     | NodePort   | 3001    | 3001    | 30002    |
+| Grafana     | NodePort   | 3000    | 3000    | 30003    |
 
 
 
@@ -50,6 +51,8 @@ kubectl apply -f apps/asap/
 kubectl apply -f apps/uptimekuma/
 kubectl apply -f observability/prometheus/
 kubectl apply -f observability/grafana/
+kubectl apply -f observability/loki/
+kubectl apply -f observability/alloy/
 ```
 
 Check workloads:
