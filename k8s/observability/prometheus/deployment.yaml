@@ -38,7 +38,13 @@ spec:
             - name: secrets
               mountPath: /etc/prometheus/secrets
               readOnly: true
-
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
 
       volumes:
         - name: config

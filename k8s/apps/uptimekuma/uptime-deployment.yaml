@@ -20,6 +20,9 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3001
+          volumeMounts:
+            - name: uptime-kuma-storage
+              mountPath: /app/data
           resources:
             requests:
               memory: "250Mi"
@@ -40,3 +43,7 @@ spec:
               port: 3001
             initialDelaySeconds: 10
             periodSeconds: 10
+      volumes:
+        - name: uptime-kuma-storage
+          persistentVolumeClaim:
+            claimName: uptime-kuma-pvc
