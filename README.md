@@ -31,13 +31,14 @@ This repository manages the complete lifecycle of my homelab — from bare-metal
 The K3s cluster runs on Ubuntu 24.04 Cloud-Init VMs provisioned via Terraform. Ansible provisions the cluster using the `install-k3s` role and `playbooks/k3s.yaml`. Workloads are declared in `k8s/`.
 
 **Cluster nodes:**
-- `k3s-control` — Control plane (192.168.1.170)
-- `k3s-worker-1` — Worker node (192.168.1.171)
+- `k3s-control` — Control plane
+- `k3s-worker-1` — Worker node
 
 **Applications running in cluster:**
 - ASAP (frontend + backend)
+- Firefly III
 - Uptime Kuma
-- Prometheus, Grafana, Loki (observability stack)
+- Prometheus, Grafana, Loki, Alloy (observability stack)
 
 ## Quick Start
 
@@ -58,9 +59,16 @@ ansible-playbook -i inventory/hosts.ini playbooks/databases.yml   # Databases
 ### 3. Deploy Kubernetes Workloads
 ```bash
 kubectl apply -f k8s/namespace/
-kubectl apply -f k8s/apps/
-kubectl apply -f k8s/observability/
+kubectl apply -f k8s/apps/asap/
+kubectl apply -f k8s/apps/firefly3/
+kubectl apply -f k8s/apps/uptimekuma/
+kubectl apply -f k8s/observability/prometheus/
+kubectl apply -f k8s/observability/loki/
+kubectl apply -f k8s/observability/alloy/
+kubectl apply -f k8s/observability/grafana/
 ```
+
+Kubernetes Secret manifests are required for workloads that use credentials. Do not document secret values in README files; keep them in local secret manifests or an external secret management workflow.
 
 ## SSH Key Setup
 

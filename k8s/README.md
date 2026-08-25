@@ -7,8 +7,8 @@ The cluster is provisioned by Terraform + Ansible (see `../terraform` and `../an
 ## Cluster
 
 Runs on K3s v1.36+ on Ubuntu 24.04 VMs:
-- `k3s-control` — Control plane (192.168.1.170)
-- `k3s-worker-1` — Worker node (192.168.1.171)
+- `k3s-control` — Control plane
+- `k3s-worker-1` — Worker node
 
 ## Port Mapping
 
@@ -27,6 +27,10 @@ Runs on K3s v1.36+ on Ubuntu 24.04 VMs:
 Custom application deployed as separate frontend and backend workloads. The backend connects to PostgreSQL running outside the cluster.
 - Resources: `Deployment`, `Service`, `Secret`
 
+### Firefly III
+Personal finance application backed by PostgreSQL running outside the cluster.
+- Resources: `Deployment`, `Service`, `ConfigMap`, `Secret`, `PersistentVolumeClaim`
+
 ### Uptime Kuma
 Uptime monitoring tool. Exposes Prometheus-compatible `/metrics` endpoint consumed by the observability stack.
 - Resources: `Deployment`, `Service`, `PersistentVolumeClaim`
@@ -38,21 +42,29 @@ Manually composed observability stack — intentionally avoiding large bundles (
 | Component | Role |
 |---|---|
 | Prometheus | Scrapes metrics from apps (Uptime Kuma `/metrics`) |
-| Grafana | Visualizes Prometheus metrics |
-| Loki | Centralized log aggregation (planned) |
+| Grafana | Visualizes Prometheus metrics and Loki logs |
+| Loki | Centralized log aggregation |
+| Alloy | Collects Kubernetes pod logs and forwards them to Loki |
 
-Prometheus authenticates with Uptime Kuma using an API key stored as a Kubernetes `Secret`.
+Prometheus authenticates with Uptime Kuma using an API key stored as a Kubernetes `Secret`. Secret manifests are required for workloads that need credentials, but secret values are intentionally not documented here.
+
+Log flow:
+
+```text
+Kubernetes pods -> Alloy DaemonSet -> Loki -> Grafana
+```
 
 ## Deployment
 
 ```bash
 kubectl apply -f namespace/
 kubectl apply -f apps/asap/
+kubectl apply -f apps/firefly3/
 kubectl apply -f apps/uptimekuma/
 kubectl apply -f observability/prometheus/
-kubectl apply -f observability/grafana/
 kubectl apply -f observability/loki/
 kubectl apply -f observability/alloy/
+kubectl apply -f observability/grafana/
 ```
 
 Check workloads:
