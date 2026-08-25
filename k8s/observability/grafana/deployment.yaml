@@ -21,10 +21,19 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
-
+          env:
+            - name: GF_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secrets
+                  key: db-password
           volumeMounts:
-            - name: datasources
-              mountPath: /etc/grafana/provisioning/datasources
+            - name: grafana-config
+              mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+              subPath: datasources.yaml
+            - name: grafana-config
+              mountPath: /etc/grafana/grafana.ini
+              subPath: grafana.ini
           resources:
             requests:
               cpu: 250m
@@ -33,6 +42,6 @@ spec:
               cpu: "1"
               memory: 1Gi
       volumes:
-        - name: datasources
+        - name: grafana-config
           configMap:
-            name: grafana-datasources
+            name: grafana-config

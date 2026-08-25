@@ -51,42 +51,44 @@ traefik_http_services:
     host: "git.{{ traefik_domain }}"
     url: "http://192.168.1.131:4000"
 
-  - name: asap
-    host: "asap.{{ traefik_domain }}"
-    url: "http://192.168.1.170:30001"
-
   - name: vert
     host: "vert.{{ traefik_domain }}"
     url: "http://192.168.1.131:3080"
-
-  - name: firefly
-    host: "money.{{ traefik_domain }}"
-    url: "http://192.168.1.170:30000"
 
   - name: memos
     host: "memos.{{ traefik_domain }}"
     url: "http://192.168.1.131:5230"
 
-  - name: uptime
-    host: "uptime.{{ traefik_domain }}"
-    url: "http://192.168.1.170:30002"
-  
   - name: bastionvault
     host: "bastionvault.{{ traefik_domain }}"
     url: "http://192.168.1.153:8080"
-    enabled: true
 
   - name: sencho
     host: "sencho.{{ traefik_domain }}"
     url: "http://192.168.1.131:1852"
-    enabled: true
 
   - name: linkding
     host: "linkding.{{ traefik_domain }}"
     url: "http://192.168.1.131:9090"
-    enabled: true
 
   - name: gitea
     host: "gitea.{{ traefik_domain }}"
     url: "http://192.168.1.152:3000"
-    enabled: true
+
+  ####### K8S NODE #######
+
+  - name: firefly
+    host: "money.{{ traefik_domain }}"
+    url: "http://192.168.1.170:30000"
+
+  - name: asap
+    host: "asap.{{ traefik_domain }}"
+    url: "http://192.168.1.170:30001"
+
+  - name: uptime
+    host: "uptime.{{ traefik_domain }}"
+    url: "http://192.168.1.170:30002"
+
+  - name: grafana
+    host: "grafana.{{ traefik_domain }}"
+    url: "http://192.168.1.170:30003"

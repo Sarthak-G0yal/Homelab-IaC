@@ -1,0 +1,5 @@
+resources:
+  - client-deployment.yaml
+  - server-deployment.yaml
+  - client-service.yaml
+  - service-secrets.yaml
