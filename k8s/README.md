@@ -18,7 +18,7 @@ Runs on K3s v1.36+ on Ubuntu 24.04 VMs:
 | ASAP Client     | NodePort   | 80    | 80    | 30001    |
 | Uptime Kuma     | NodePort   | 3001    | 3001    | 30002    |
 | Grafana     | NodePort   | 3000    | 3000    | 30003    |
-
+| ASAP Server     | NodePort   | 3000    | 3000    | 30004    |
 
 
 ## Applications
