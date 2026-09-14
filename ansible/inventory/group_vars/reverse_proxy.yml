@@ -41,19 +41,9 @@ traefik_http_services:
     host: "portainer.{{ traefik_domain }}"
     url: "http://192.168.1.131:9000"
 
-  - name: n8n
-    host: "n8n.{{ traefik_domain }}"
-    url: "http://192.168.1.131:5678"
-    middlewares:
-      - n8n-headers
-
-  - name: git
-    host: "git.{{ traefik_domain }}"
-    url: "http://192.168.1.131:4000"
-
-  - name: vert
-    host: "vert.{{ traefik_domain }}"
-    url: "http://192.168.1.131:3080"
+  - name: affine
+    host: "affine.{{ traefik_domain }}"
+    url: "http://192.168.1.131:3010"
 
   - name: memos
     host: "memos.{{ traefik_domain }}"
@@ -66,6 +56,10 @@ traefik_http_services:
   - name: sencho
     host: "sencho.{{ traefik_domain }}"
     url: "http://192.168.1.131:1852"
+
+  - name: appwrite
+    host: "appwrite.{{ traefik_domain }}"
+    url: "http://192.168.1.131:20080"
 
   - name: linkding
     host: "linkding.{{ traefik_domain }}"

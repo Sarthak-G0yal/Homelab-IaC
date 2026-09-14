@@ -76,3 +76,11 @@ module "k3s-worker-1" {
   network  = var.network
   platform = var.platform
 }
+
+module "postgres-database-vm" {
+  source = "../../services/postgres-database-vm"
+
+  config   = var.postgres_vm_config
+  network  = var.network
+  platform = var.platform
+}

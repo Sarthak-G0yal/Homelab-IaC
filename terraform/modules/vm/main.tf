@@ -36,6 +36,16 @@ resource "proxmox_virtual_environment_vm" "this" {
     size         = var.disk_size_gb
   }
 
+  dynamic "disk" {
+    for_each = var.extra_disks
+    content {
+      datastore_id = disk.value.datastore_id
+      interface    = disk.value.interface
+      size         = disk.value.size
+      file_format  = disk.value.file_format
+    }
+  }
+
   network_device {
     bridge = var.bridge
   }

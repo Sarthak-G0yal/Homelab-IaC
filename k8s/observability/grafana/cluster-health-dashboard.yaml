@@ -1,0 +1,150 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: observability
+data:
+  cluster-health.json: |
+    {
+      "annotations": { "list": [] },
+      "editable": true,
+      "title": "Cluster & Pod Resource Health",
+      "refresh": "10s",
+      "schemaVersion": 38,
+      "style": "dark",
+      "tags": ["kubernetes", "cluster"],
+      "timezone": "browser",
+      "panels": [
+        {
+          "id": 1,
+          "title": "Pod CPU Usage (Cores)",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "Prometheus" },
+              "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"\"}[5m])) by (pod, namespace)",
+              "legendFormat": "{{namespace}} / {{pod}}"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "Pod Memory Usage (Working Set)",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "fieldConfig": {
+            "defaults": { "unit": "bytes" }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "Prometheus" },
+              "expr": "sum(container_memory_working_set_bytes{container!=\"\"}) by (pod, namespace)",
+              "legendFormat": "{{namespace}} / {{pod}}"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "title": "Pod Restarts (Last 1 Hour)",
+          "type": "stat",
+          "gridPos": { "h": 6, "w": 12, "x": 0, "y": 8 },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "Prometheus" },
+              "expr": "sum(increase(kube_pod_container_status_restarts_total[1h])) by (pod, namespace)",
+              "legendFormat": "{{pod}}"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "title": "Node Memory Utilization %",
+          "type": "gauge",
+          "gridPos": { "h": 6, "w": 12, "x": 12, "y": 8 },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "Prometheus" },
+              "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+              "legendFormat": "Memory Used %"
+            }
+          ]
+        }
+      ]
+    }
+  apps-overview.json: |
+    {
+      "annotations": { "list": [] },
+      "editable": true,
+      "title": "Application Logs",
+      "refresh": "5s",
+      "schemaVersion": 38,
+      "style": "dark",
+      "tags": ["apps", "loki", "logs"],
+      "templating": {
+        "list": [
+          {
+            "name": "namespace",
+            "type": "custom",
+            "query": "default, observability",
+            "current": { "text": "default", "value": "default" },
+            "hide": 0,
+            "label": "Namespace"
+          },
+          {
+            "name": "app",
+            "type": "custom",
+            "query": "firefly3, uptime-kuma, asap-client, server",
+            "current": { "text": "firefly3", "value": "firefly3" },
+            "hide": 0,
+            "label": "Application"
+          },
+          {
+            "name": "search",
+            "type": "textbox",
+            "query": "",
+            "current": { "text": "", "value": "" },
+            "hide": 0,
+            "label": "Search"
+          }
+        ]
+      },
+      "panels": [
+        {
+          "id": 1,
+          "title": "$namespace / $app",
+          "type": "logs",
+          "gridPos": { "h": 13, "w": 24, "x": 0, "y": 0 },
+          "options": {
+            "showLabels": true,
+            "wrapLogMessage": true,
+            "enableLogDetails": true
+          },
+          "targets": [
+            {
+              "datasource": { "type": "loki", "uid": "Loki" },
+              "expr": "{namespace=\"$namespace\", app=~\"$app\"} |= \"$search\"",
+              "legendFormat": ""
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "$namespace - All Pod Logs",
+          "type": "logs",
+          "gridPos": { "h": 10, "w": 24, "x": 0, "y": 13 },
+          "options": {
+            "showLabels": true,
+            "wrapLogMessage": true,
+            "enableLogDetails": true
+          },
+          "targets": [
+            {
+              "datasource": { "type": "loki", "uid": "Loki" },
+              "expr": "{namespace=\"$namespace\"} |= \"$search\"",
+              "legendFormat": ""
+            }
+          ]
+        }
+      ]
+    }

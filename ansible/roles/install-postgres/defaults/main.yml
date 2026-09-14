@@ -1,0 +1,22 @@
+---
+postgres_version: "16"
+postgres_listen_addresses: "*"
+postgres_port: 5432
+postgres_admin_user: "{{ secret_postgres_admin_user | default('postgres') }}"
+postgres_admin_password: "{{ secret_postgres_admin_password | default('') }}"
+postgres_allowed_subnets:
+  - "192.168.1.0/24"
+
+# Dedicated data disk configuration (e.g. virtio1 /dev/vdb on external-hdd)
+postgres_configure_disk: true
+postgres_data_disk_device: "/dev/vdb"
+postgres_data_disk_mount_path: "/var/lib/postgresql"
+postgres_data_disk_fstype: "ext4"
+postgres_data_disk_mount_opts: "defaults,noatime"
+
+# Basic performance tuning
+postgres_max_connections: 100
+postgres_shared_buffers: "512MB"
+postgres_work_mem: "16MB"
+postgres_maintenance_work_mem: "128MB"
+postgres_effective_cache_size: "1536MB"

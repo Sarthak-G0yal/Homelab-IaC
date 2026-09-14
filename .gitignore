@@ -62,4 +62,5 @@ Backups
 db
 *asp*
 
-*secrets.yaml
+*secrets.yml
+ansible/inventory/group_vars/all/secrets.yml

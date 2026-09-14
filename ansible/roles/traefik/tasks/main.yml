@@ -109,7 +109,7 @@
     -out {{ traefik_certs_dir }}/traefik.crt
   args:
     creates: "{{ traefik_certs_dir }}/traefik.crt"
-  when: traefik_generate_self_signed | bool
+  when: traefik_generate_self_signed | bool 
 
 - name: Set certificate permissions
   ansible.builtin.file:

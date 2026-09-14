@@ -175,3 +175,16 @@ variable "k3s_worker_1_config" {
     cpu_cores    = number
   })
 }
+
+variable "postgres_vm_config" {
+  type = object({
+    node_name           = string
+    vm_id               = number
+    ipv4_address        = string
+    disk_size_gb        = number
+    memory_mb           = number
+    cpu_cores           = number
+    data_disk_datastore = optional(string, "external-hdd")
+    data_disk_size_gb   = optional(number, 100)
+  })
+}

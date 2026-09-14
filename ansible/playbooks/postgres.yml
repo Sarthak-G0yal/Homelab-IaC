@@ -1,6 +1,6 @@
 ---
-- name: Configure Streaming Server with Plex and Jellyfin
-  hosts: streaming
+- name: Configure Database Servers
+  hosts: databases
   become: yes
   pre_tasks:
     - name: Fix locale
@@ -12,5 +12,4 @@
     - name: Enable unattended upgrades
       ansible.builtin.import_tasks: ../tasks/enable-unattended-upgrades.yml
   roles:
-    # - plex
-    - jellyfin
+    - install-postgres

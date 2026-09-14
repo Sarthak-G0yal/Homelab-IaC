@@ -117,3 +117,14 @@ variable "qemu_agent_enabled" {
   description = "Enable QEMU guest agent waiting"
   default     = false
 }
+
+variable "extra_disks" {
+  description = "Additional data disks to attach, each on a potentially different datastore"
+  type = list(object({
+    datastore_id = string
+    size         = number
+    interface    = string
+    file_format  = optional(string, "raw")
+  }))
+  default = []
+}
