@@ -19,6 +19,7 @@ Runs on K3s v1.36+ on Ubuntu 24.04 VMs:
 | Uptime Kuma     | NodePort   | 3001    | 3001    | 30002    |
 | Grafana     | NodePort   | 3000    | 3000    | 30003    |
 | ASAP Server     | NodePort   | 3000    | 3000    | 30004    |
+| FireflyImporter     | NodePort   | 8080    | 8080    | 30005    |
 
 
 ## Applications

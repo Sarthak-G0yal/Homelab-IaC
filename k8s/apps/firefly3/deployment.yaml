@@ -48,3 +48,48 @@ spec:
         - name: firefly3-upload
           persistentVolumeClaim:
             claimName: firefly3-upload
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: firefly3-importer
+  labels:
+    app: firefly3-importer
+spec:
+  selector:
+    matchLabels:
+      app: firefly3-importer
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: firefly3-importer
+        tier: frontend
+    spec:
+      containers:
+        - image: fireflyiii/data-importer:latest
+          name: firefly3-importer
+          env:
+            - name: FIREFLY_III_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: firefly3-secret
+                  key: ACCESS_TOKEN
+            - name: FIREFLY_III_URL
+              value: "http://firefly3:8080"
+            - name: TRUSTED_PROXIES
+              value: "**"
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          ports:
+            - containerPort: 8080
+              name: firefly3
+          imagePullPolicy: Always
