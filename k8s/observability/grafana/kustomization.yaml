@@ -3,5 +3,4 @@ resources:
   - deployment.yaml
   - service.yaml
   - secrets.yaml
-  - dashboard-provider.yaml
-  - cluster-health-dashboard.yaml
+

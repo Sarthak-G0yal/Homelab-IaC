@@ -34,11 +34,6 @@ spec:
             - name: grafana-config
               mountPath: /etc/grafana/grafana.ini
               subPath: grafana.ini
-            - name: dashboard-provider
-              mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml
-              subPath: dashboards.yaml
-            - name: dashboards-storage
-              mountPath: /var/lib/grafana/dashboards
           resources:
             requests:
               cpu: 250m
@@ -50,9 +45,3 @@ spec:
         - name: grafana-config
           configMap:
             name: grafana-config
-        - name: dashboard-provider
-          configMap:
-            name: grafana-dashboard-provider
-        - name: dashboards-storage
-          configMap:
-            name: grafana-dashboards
