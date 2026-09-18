@@ -7,15 +7,50 @@ data:
   prometheus.yml: |
     global:
       scrape_interval: 15s
+      evaluation_interval: 15s
 
     scrape_configs:
-      - job_name: "uptime-kuma"
-        metrics_path: /metrics
+      # Kubelet cAdvisor (container CPU & memory metrics)
+      - job_name: "kubernetes-cadvisor"
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - target_label: __metrics_path__
+            replacement: /metrics/cadvisor
 
-        static_configs:
-          - targets:
-              - "uptime-kuma.default.svc.cluster.local:3001"
+      # Node Exporter (host CPU, memory, disk, network)
+      - job_name: "node-exporter"
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - observability
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name]
+            regex: node-exporter
+            action: keep
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            regex: metrics
+            action: keep
 
-        basic_auth:
-          username: ""
-          password_file: /etc/prometheus/secrets/api-key
+      # Kube State Metrics (pod lifecycle, restart counts, deployments)
+      - job_name: "kube-state-metrics"
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - observability
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name]
+            regex: kube-state-metrics
+            action: keep
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            regex: http-metrics
+            action: keep
